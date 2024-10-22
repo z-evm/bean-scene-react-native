@@ -2,6 +2,7 @@ import * as React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import Icon from 'react-native-vector-icons/FontAwesome';
 
 import AdminScreen from './app/admin';
 import FloorScreen from './app/floor';
@@ -19,10 +20,34 @@ export default function App() {
   return (
     <NavigationContainer>
       <Tab.Navigator>
-        <Tab.Screen name="Floor" component={FloorScreen} />
-        <Tab.Screen name="Reservation" component={ReservationScreen} />
-        <Tab.Screen name="Admin" component={AdminScreen} />
-        <Tab.Screen name="Logout" component={Logout} />
+        <Tab.Screen name="Floor" component={FloorScreen} 
+          options={{
+              tabBarIcon: () => (
+                  <Icon name='square' size={20} />
+              )
+          }}
+        />
+        <Tab.Screen name="Reservation" component={ReservationScreen} 
+          options={{
+              tabBarIcon: () => (
+                  <Icon name='book' size={20} />
+              )
+          }}
+        />
+        <Tab.Screen name="Admin" component={AdminScreen} 
+          options={{
+              tabBarIcon: () => (
+                  <Icon name='users' size={20} />
+              )
+          }}
+        />
+        <Tab.Screen name="Logout" component={Logout} 
+          options={{
+              tabBarIcon: () => (
+                  <Icon name='unlock' size={20} />
+              )
+          }}
+        />
       </Tab.Navigator>
     </NavigationContainer>
   );
