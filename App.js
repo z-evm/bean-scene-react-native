@@ -3,21 +3,26 @@ import { StyleSheet, Text, View } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 
-import HomeScreen from './app/index';
-import MenuScreen from './app/menu';
-import OrderScreen from './app/order';
+import AdminScreen from './app/admin';
+import FloorScreen from './app/floor';
 import ReservationScreen from './app/reservation';
 
 const Tab = createBottomTabNavigator();
-
+function Logout() {
+  return (
+    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+      <Text>Logout</Text>
+    </View>
+  );
+}
 export default function App() {
   return (
     <NavigationContainer>
       <Tab.Navigator>
-        <Tab.Screen name="Home" component={HomeScreen} />
-        <Tab.Screen name="Menu Page" component={MenuScreen} />
-        <Tab.Screen name="Order Page" component={OrderScreen} />
-        <Tab.Screen name="Reservation Page" component={ReservationScreen} />
+        <Tab.Screen name="Floor" component={FloorScreen} />
+        <Tab.Screen name="Reservation" component={ReservationScreen} />
+        <Tab.Screen name="Admin" component={AdminScreen} />
+        <Tab.Screen name="Logout" component={Logout} />
       </Tab.Navigator>
     </NavigationContainer>
   );
