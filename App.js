@@ -4,18 +4,12 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import Icon from 'react-native-vector-icons/FontAwesome';
 
-import AdminScreen from './app/admin';
+import MenuScreen from './app/menu';
 import FloorScreen from './app/floor';
 import ReservationScreen from './app/reservation';
 
 const Tab = createBottomTabNavigator();
-function Logout() {
-  return (
-    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-      <Text>Logout</Text>
-    </View>
-  );
-}
+
 export default function App() {
   return (
     <NavigationContainer>
@@ -34,20 +28,14 @@ export default function App() {
               )
           }}
         />
-        <Tab.Screen name="Admin" component={AdminScreen} 
+        <Tab.Screen name="Menu" component={MenuScreen} 
           options={{
               tabBarIcon: () => (
-                  <Icon name='users' size={20} />
+                  <Icon name='bars' size={20} />
               )
           }}
         />
-        <Tab.Screen name="Logout" component={Logout} 
-          options={{
-              tabBarIcon: () => (
-                  <Icon name='unlock' size={20} />
-              )
-          }}
-        />
+        
       </Tab.Navigator>
     </NavigationContainer>
   );
