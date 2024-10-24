@@ -6,6 +6,7 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 
 import MenuScreen from './app/menu';
 import FloorScreen from './app/floor';
+import OrderScreen from './app/order';
 import ReservationScreen from './app/reservation';
 
 const Tab = createBottomTabNavigator();
@@ -28,10 +29,18 @@ export default function App() {
               )
           }}
         />
+        <Tab.Screen name="Order" component={OrderScreen} 
+          options={{
+              tabBarIcon: () => (
+                  <Icon name='book' size={20} />
+              )
+          }}
+          initialParams={{ tableId: undefined}}
+        />
         <Tab.Screen name="Menu" component={MenuScreen} 
           options={{
               tabBarIcon: () => (
-                  <Icon name='bars' size={20} />
+                  <Icon name='table' size={20} />
               )
           }}
         />
