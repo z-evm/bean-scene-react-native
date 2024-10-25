@@ -523,6 +523,7 @@ const styles = StyleSheet.create({
     elevation: 3,
     backgroundColor: '#2F6672',
     width:'65%',
+    fontFamily: 'Open Sans',
   },
   orderButton: {
     paddingVertical: 12,
@@ -532,6 +533,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#4AA1B5',
     textAlign:'center',
     width:'30%',
+    fontFamily: 'Open Sans',
   },
   text: {
     lineHeight: 21,

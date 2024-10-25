@@ -35,7 +35,6 @@ export default function App() {
                   <Icon name='book' size={20} />
               )
           }}
-          initialParams={{ tableId: undefined}}
         />
         <Tab.Screen name="Menu" component={MenuScreen} 
           options={{
