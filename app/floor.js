@@ -8,7 +8,7 @@ import {
   ScrollView
 } from 'react-native';
 const Floor = ({navigation}) => (
-  <SafeAreaView style={styles.container}>
+  <SafeAreaView resizeMode="contain" style={styles.container}>
     <ScrollView>
       <View style={styles.fixToText}>
         <Pressable style={styles.reserveButton} onPress={() => {

@@ -14,7 +14,7 @@ const Tab = createBottomTabNavigator();
 export default function App() {
   return (
     <NavigationContainer>
-      <Tab.Navigator>
+      <Tab.Navigator screenOptions={{ headerTitle: '' }}>
         <Tab.Screen name="Floor" component={FloorScreen} 
           options={{
               tabBarIcon: () => (
