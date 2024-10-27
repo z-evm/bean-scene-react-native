@@ -21,3 +21,5 @@ import HomeScreen from './app/index';
 
 - the name attribute corresponds to the Name of the page that is shown on the screen
 - the component attribute corresponds to the name of the variable that you declared in step 1 with the curly braces
+
+3)  Please make sure Endpoint  If you are using android studio before run make sure frontend End point should be http://YourApi:3000/api/ 

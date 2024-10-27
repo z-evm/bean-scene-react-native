@@ -2,7 +2,6 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { View, Text, ScrollView, TouchableOpacity, StyleSheet, Dimensions, Modal, TextInput, Button, SafeAreaView, Alert } from 'react-native';
 
 const OrderScreen = ({route, navigation }) => {
-  const tableId = route?.params?.tableId || 'Unknown'; // get table Id from floor plan 
 
   const [menuItems, setMenuItems] = useState([]);
   const [selectedItem, setSelectedItem] = useState(null);
@@ -10,13 +9,14 @@ const OrderScreen = ({route, navigation }) => {
   const [menuItemNote, setMenuItemNote] = useState('');
   const [orderNote, setOrderNote] = useState('');
   const [orderNoteModalVisible, setOrderNoteModalVisible] = useState(false);
+  const { tableId, bookedTables = [] } = route.params; // get table Id from floor plan 
   const [orderData, setOrderData] = useState({
-    orderId: null,
+    orderId: null,         //string 
     orderDate: new Date().toISOString(), //YYYY-MM-DDTHH:mm:ss.sssZ  "2023-08-17T18:53:12",
-    tableNumber: tableId, // come from plan table
+    tableNumber: tableId, // come from plan table string 
     orderStatus: 'PENDING', // as default pending 
-    notes: '', // order note item note
-    orderItems: [], // order item array
+    notes: '', // order note item note string 
+    orderItems: [],  // order item array
   });
 
   const windowWidth = Dimensions.get('window').width;
@@ -63,6 +63,18 @@ const OrderScreen = ({route, navigation }) => {
   
       if (response.ok) {
         Alert.alert('Success', 'Order successfully created');
+
+        updateBookedTable=[...bookedTables]; 
+
+        if(orderData.orderStatus=== "CANCELED"){  // look the table status
+          updateBookedTable=updateBookedTable.filter(Id => id !==tableId)
+        }
+        else{
+          if(!updateBookedTable.includes(tableId)){
+            updateBookedTable.push(tableId)
+          }
+        }
+         // navigate to floor plan
         setOrderData({
           orderId: null,
           orderDate: new Date().toISOString(),
@@ -72,6 +84,9 @@ const OrderScreen = ({route, navigation }) => {
           orderItems: [],
         });
         setOrderNoteModalVisible(false); //close the modeal 
+
+        navigation.navigate('Floor', { tableId,bookedTables :updateBookedTable }); // after submit order return to floor plan.
+
       } else {
         // if  resonse not succesfully gave error
         const errorMessage = await response.text();
@@ -143,6 +158,7 @@ const OrderScreen = ({route, navigation }) => {
       orderItems: prevData.orderItems.filter(item => item.menuItemId !== menuItemId),
     }));
   };
+
 
   const toggleOrderStatus = () => { // set up for order status
     setOrderData(prevData => ({
@@ -250,7 +266,7 @@ const OrderScreen = ({route, navigation }) => {
           <View style={styles.orderSummary}>
             <Text style={styles.orderSummaryText}>Status: {orderData.orderStatus}</Text>
             <TouchableOpacity onPress={toggleOrderStatus} style={styles.statusToggleButton}>
-              <Text style={styles.statusToggleButtonText}>Toggle to {orderData.orderStatus === 'PENDING' ? 'PAID' : 'PENDING'}</Text>
+            <Text style={styles.statusToggleButtonText}>Toggle to {orderData.orderStatus === 'PENDING' ? 'PAID' : 'PENDING'}</Text>
             </TouchableOpacity>
             <Text style={styles.orderSummaryText}>Total Items: {orderData.orderItems.reduce((total, item) => total + item.qty, 0)}</Text>  {/* calculate item  */}
             <Text style={styles.orderSummaryText}>Total Cost: ${orderData.orderItems.reduce((total, item) => total + item.price * item.qty, 0).toFixed(2)}</Text>{/* calculate price  */}
@@ -323,3 +339,8 @@ const createStyles = (isTablet) => StyleSheet.create({
 });
 
 export default OrderScreen;
+
+
+<TouchableOpacity onPress={toggleOrderStatus} style={styles.statusToggleButton}>
+<Text style={styles.statusToggleButtonText}>Toggle to {orderData.orderStatus === 'PENDING' ? 'PAID' : 'PENDING'}</Text>
+</TouchableOpacity>
