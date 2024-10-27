@@ -8,6 +8,7 @@ import MenuScreen from './app/menu';
 import FloorScreen from './app/floor';
 import OrderScreen from './app/order';
 import ReservationScreen from './app/reservation';
+import AdminScreen from './app/admin';
 
 const Tab = createBottomTabNavigator();
 
@@ -43,7 +44,13 @@ export default function App() {
               )
           }}
         />
-        
+        <Tab.Screen name="Admin" component={AdminScreen} 
+          options={{
+            tabBarIcon: () => (
+              <Icon name='user-shield' size={20} />
+            ),
+          }}
+        />
       </Tab.Navigator>
     </NavigationContainer>
   );
