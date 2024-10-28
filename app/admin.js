@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useEffect } from 'react';
-import {View,Text,TextInput,ScrollView,TouchableOpacity,StyleSheet,FlatList,Dimensions,} from 'react-native';
+import {View,Text,TextInput,ScrollView,TouchableOpacity,StyleSheet,FlatList,Dimensions, Pressable,} from 'react-native';
 
 const AdminScreen = () => {
   const [menuItems, setMenuItems] = useState([]); // Store menu items fetched from backend
@@ -114,15 +114,15 @@ const AdminScreen = () => {
 
   const resetForm = () => {
     setForm({ name: '', description: '', price: '', category: '', ingredients: '', dietary: '' });
-    setIsEditing(false); // editting false when we choose item will be true .
+    setIsEditing(false);  // editting false when we choose item will be true .
     setCurrentId(null);
   };
 
   return (
-    <View style={styles.container}> {/* all screen veiw */}
-      <View style={styles.formSection}> {/*menu item input veiw */}
+    <View style={styles.container}> 
+      <View style={styles.formSection}> 
         <Text style={styles.header}>Menu Item Details</Text>
-        <ScrollView> {/* Menu item scroll view  input*/}
+        <ScrollView> 
           <TextInput style={styles.input} placeholder="Name" value={form.name} onChangeText={(text) => setForm({ ...form, name: text })} />
           <TextInput style={styles.input} placeholder="Description" value={form.description} onChangeText={(text) => setForm({ ...form, description: text })} />
           <TextInput
@@ -130,14 +130,13 @@ const AdminScreen = () => {
             placeholder="Price"
             value={form.price ? form.price.toString() : ''} 
             keyboardType="numeric"                         
-            onChangeText={(number) => setForm({ ...form, price: Number(number) })} 
-          />        {/* ensure enter the correct */ }
+            onChangeText={(number) => setForm({ ...form, price: Number(number) })} />       
           <TextInput style={styles.input} placeholder="Category" value={form.category} onChangeText={(text) => setForm({ ...form, category: text })} />
           <TextInput style={styles.input} placeholder="Ingredients (comma separated)" value={form.ingredients} onChangeText={(text) => setForm({ ...form, ingredients: text })} />
           <TextInput style={styles.input} placeholder="Dietary (comma separated)" value={form.dietary} onChangeText={(text) => setForm({ ...form, dietary: text })} />
-          <TouchableOpacity style={styles.button} onPress={handleSubmit}>
+          <Pressable style={styles.button} onPress={handleSubmit}>
             <Text style={styles.buttonText}>{isEditing ? 'Update' : 'Add'}</Text>
-          </TouchableOpacity>
+          </Pressable>
         </ScrollView>
       </View>
       <View style={styles.listSection}>

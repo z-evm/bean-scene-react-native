@@ -45,11 +45,6 @@ export default function App() {
           }}
         />
         <Tab.Screen name="Admin" component={AdminScreen} 
-          options={{
-            tabBarIcon: () => (
-              <Icon name='user-shield' size={20} />
-            ),
-          }}
         />
       </Tab.Navigator>
     </NavigationContainer>

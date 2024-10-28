@@ -1,15 +1,14 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { View, Text, ScrollView, TouchableOpacity, StyleSheet, Dimensions, Modal, TextInput, Button, SafeAreaView, Alert } from 'react-native';
+import { View, Text, ScrollView, TouchableOpacity, StyleSheet, Dimensions, Modal, TextInput, Button, SafeAreaView, Alert, Pressable } from 'react-native';
 
 const OrderScreen = ({route, navigation }) => {
-
   const [menuItems, setMenuItems] = useState([]);
   const [selectedItem, setSelectedItem] = useState(null);
   const [modalVisible, setModalVisible] = useState(false); 
   const [menuItemNote, setMenuItemNote] = useState('');
   const [orderNote, setOrderNote] = useState('');
   const [orderNoteModalVisible, setOrderNoteModalVisible] = useState(false);
-  const { tableId, bookedTables = [] } = route.params; // get table Id from floor plan 
+  const { tableId, bookedTables = [] } = route?.params || {}; // get table Id from floor plan 
   const [orderData, setOrderData] = useState({
     orderId: null,         //string 
     orderDate: new Date().toISOString(), //YYYY-MM-DDTHH:mm:ss.sssZ  "2023-08-17T18:53:12",
@@ -85,7 +84,7 @@ const OrderScreen = ({route, navigation }) => {
         });
         setOrderNoteModalVisible(false); //close the modeal 
 
-        navigation.navigate('Floor', { tableId,bookedTables :updateBookedTable }); // after submit order return to floor plan.
+        navigation.navigate('Floor', {bookedTables :updateBookedTable }); // after submit order return to floor plan.
 
       } else {
         // if  resonse not succesfully gave error
@@ -97,7 +96,28 @@ const OrderScreen = ({route, navigation }) => {
       Alert.alert('Error', 'Unable to connect to the server');
     }
   };
+
+
+  //fect order data 
   
+  useEffect (() => {
+    fetchOrderDatas();
+  },[]);
+
+  const fetchOrderDatas = async () => {
+    try{
+      const resonse=await fetch('http://192.168.57.221:3000/api/Orders');
+      if(response.ok){
+        const data=await resonse.json()
+        setOrderData(data);
+      }else{
+        console.error('Error fetching order data:', response.statusText);
+      }
+    }catch (error){ 
+      console.error('Error fetching order data:', error);
+    }
+  };
+
 
   const handleSelectItem = (item) => {
     setSelectedItem(item); // choose item 
@@ -168,19 +188,20 @@ const OrderScreen = ({route, navigation }) => {
   };
 
   return (
-    <View style={styles.container}>  {/* all screen container  */}
+    <View style={styles.container}>{/* all screen container  */}
+
       {/* Modal for item notes */}
       <Modal animationType="slide" transparent={true} visible={modalVisible} onRequestClose={() => setModalVisible(false)}>
         <View style={styles.modalContainer}>
           <View style={styles.modalView}>
             <Text style={styles.modalText}>Add a note for {selectedItem?.name}</Text>
-            <TextInput style={styles.noteInput} placeholder="Enter your note" value={menuItemNote} onChangeText={setMenuItemNote} />
-            <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+            <TextInput style={styles.noteInput} placeholder="Enter your note" value={menuItemNote} onChangeText={setMenuItemNote}/>
+            <View style={{ flexDirection: 'row', justifyContent: 'space-between'}}>
               <View style={{ marginRight: 10 }}>
-                <Button title="Confirm Order" onPress={handleConfirmOrder} />
+                <Button title="Confirm Order" onPress={handleConfirmOrder}/>
               </View>
               <View style={{ marginLeft: 10 }}>
-                <Button title="Cancel" onPress={() => setModalVisible(false)} />
+                <Button title="Cancel" onPress={() => setModalVisible(false)}/>
               </View>
             </View>
           </View>
@@ -200,9 +221,7 @@ const OrderScreen = ({route, navigation }) => {
                       await pushOrderData();
                     } else {
                       Alert.alert('Error', 'No items in the order');
-                    }
-                  }} 
-                />
+                    }}}/>
             </View>
             <View style={{marginRight:10}}>
               <Button title="Cancel" onPress={() => setOrderNoteModalVisible(false)} />
@@ -213,28 +232,28 @@ const OrderScreen = ({route, navigation }) => {
       </Modal>
 
       {/* Menu Section */}
-      <View style={styles.menuSection}> {/* menu container */}
+      <View style={styles.menuSection}>{/* menu container */}
         <Text style={styles.header}>Menu Items</Text>
         <ScrollView style={styles.menuList}>
           {menuItems.map((item) => ( 
-            <TouchableOpacity
+            <Pressable
               key={item._id}
               style={styles.item}
               onPress={() => handleSelectItem(item)} >
               <View style={styles.itemContent}>
-                <Text style={styles.itemName}>{item.name}</Text>          {/* item name*/}
-                <Text style={styles.itemPrice}>                           {/* item price */}
-                  ${typeof item.price === 'number' ? item.price.toFixed(2) : 'N/A'} {/* 12.00 */}
+                <Text style={styles.itemName}>{item.name}</Text>{/* item name*/}
+                <Text style={styles.itemPrice}>{/* item price */}
+                  ${typeof item.price === 'number' ? item.price.toFixed(2) : 'N/A'}{/* 12.00 */}
                 </Text>
               </View>
-            </TouchableOpacity>
+            </Pressable>
           ))}
         </ScrollView>
 
         {/* Manage Button */}
-        <TouchableOpacity style={styles.manageButton} onPress={() => navigation.navigate('Admin')}> {/* navigation to admin screen */}
+        <Pressable style={styles.manageButton} onPress={() => navigation.navigate('Admin')}>{/* navigation to admin screen */}
           <Text style={styles.manageButtonText}>Manage Order</Text>
-        </TouchableOpacity>
+        </Pressable>
       </View>
 
       {/* Order Summary Section */}
@@ -247,37 +266,36 @@ const OrderScreen = ({route, navigation }) => {
               <Text>{orderItem.menuItemName} x {orderItem.qty}</Text>
               {orderItem.notes ? <Text style={styles.noteText}>Note: {orderItem.notes}</Text> : null}
               <View style={styles.buttons}>
-                <TouchableOpacity style={styles.button} onPress={() => incrementOrderQty(orderItem.menuItemId)}>
+                <Pressable style={styles.button} onPress={() => incrementOrderQty(orderItem.menuItemId)}>
                   <Text style={styles.buttonText}>+</Text>
-                </TouchableOpacity>
-                <TouchableOpacity style={styles.button} onPress={() => decrementOrderQty(orderItem.menuItemId)}>
+                </Pressable>
+                <Pressable style={styles.button} onPress={() => decrementOrderQty(orderItem.menuItemId)}>
                   <Text style={styles.buttonText}>-</Text>
-                </TouchableOpacity>
-                <TouchableOpacity style={styles.deleteButton} onPress={() => handleDeleteOrderItem(orderItem.menuItemId)}>
+                </Pressable>
+                <Pressable style={styles.deleteButton} onPress={() => handleDeleteOrderItem(orderItem.menuItemId)}>
                   <Text style={styles.deleteButtonText}>Delete</Text>
-                </TouchableOpacity>
+                </Pressable>
               </View>
-            </View>
-          ))}
+            </View>))}
         </ScrollView>
 
         {/* Order Summary */}
         <SafeAreaView>
           <View style={styles.orderSummary}>
             <Text style={styles.orderSummaryText}>Status: {orderData.orderStatus}</Text>
-            <TouchableOpacity onPress={toggleOrderStatus} style={styles.statusToggleButton}>
-            <Text style={styles.statusToggleButtonText}>Toggle to {orderData.orderStatus === 'PENDING' ? 'PAID' : 'PENDING'}</Text>
-            </TouchableOpacity>
-            <Text style={styles.orderSummaryText}>Total Items: {orderData.orderItems.reduce((total, item) => total + item.qty, 0)}</Text>  {/* calculate item  */}
+            <Pressable onPress={toggleOrderStatus} style={styles.statusToggleButton}>
+            <Text style={styles.statusToggleButtonText}>Toggle to {orderData.orderStatus === 'PENDING' ? 'PAID':'PENDING'}</Text>
+            </Pressable>
+            <Text style={styles.orderSummaryText}>Total Items: {orderData.orderItems.reduce((total, item) => total + item.qty, 0)}</Text>{/* calculate item  */}
             <Text style={styles.orderSummaryText}>Total Cost: ${orderData.orderItems.reduce((total, item) => total + item.price * item.qty, 0).toFixed(2)}</Text>{/* calculate price  */}
           </View>
         </SafeAreaView>
 
         {/* Submit Button */}
         <View style={styles.submitContainer}>
-          <TouchableOpacity onPress={() => setOrderNoteModalVisible(true)} style={styles.submitButton}> {/* open order modal*/} 
+          <Pressable onPress={() => setOrderNoteModalVisible(true)} style={styles.submitButton}>{/* open order modal*/} 
             <Text style={styles.submitButtonText}>Submit Order</Text>
-          </TouchableOpacity>
+          </Pressable>
         </View>
       </View>
     </View>
@@ -340,7 +358,3 @@ const createStyles = (isTablet) => StyleSheet.create({
 
 export default OrderScreen;
 
-
-<TouchableOpacity onPress={toggleOrderStatus} style={styles.statusToggleButton}>
-<Text style={styles.statusToggleButtonText}>Toggle to {orderData.orderStatus === 'PENDING' ? 'PAID' : 'PENDING'}</Text>
-</TouchableOpacity>
