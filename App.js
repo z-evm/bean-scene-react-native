@@ -22,6 +22,7 @@ export default function App() {
                   <Icon name='square' size={20} />
               )
           }}
+          initialParams={{ tableId: undefined }} 
         />
         <Tab.Screen name="Reservation" component={ReservationScreen} 
           options={{
@@ -29,6 +30,7 @@ export default function App() {
                   <Icon name='book' size={20} />
               )
           }}
+          initialParams={{ tableId: undefined }} 
         />
         <Tab.Screen name="Order" component={OrderScreen} 
           options={{
@@ -43,6 +45,7 @@ export default function App() {
                   <Icon name='table' size={20} />
               )
           }}
+          initialParams={{ tableId: undefined }} 
         />
         <Tab.Screen name="Admin" component={AdminScreen} 
           options={{
@@ -50,6 +53,7 @@ export default function App() {
               <Icon name='user-shield' size={20} />
             ),
           }}
+          initialParams={{ tableId: undefined }} 
         />
       </Tab.Navigator>
     </NavigationContainer>
