@@ -47,14 +47,8 @@ export default function App() {
           }}
           initialParams={{ tableId: undefined }} 
         />
-        <Tab.Screen name="Admin" component={AdminScreen} 
-          options={{
-            tabBarIcon: () => (
-              <Icon name='user-shield' size={20} />
-            ),
-          }}
-          initialParams={{ tableId: undefined }} 
-        />
+
+        <Tab.Screen name="Admin" component={AdminScreen} />
       </Tab.Navigator>
     </NavigationContainer>
   );
