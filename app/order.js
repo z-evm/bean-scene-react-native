@@ -342,7 +342,7 @@ const OrderScreen = ({route, navigation }) => {
 
         {/* Manage Button */}
         <Pressable style={styles.manageButton} onPress={() => navigation.navigate('Admin')}>{/* navigation to admin screen */}
-          <Text style={styles.manageButtonText}>Manage Order</Text>
+          <Text style={styles.manageButtonText}>Manage Menu Items</Text>
         </Pressable>
       </View>
 
