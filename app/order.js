@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { View, Text, ScrollView, TouchableOpacity, StyleSheet, Dimensions, Modal, TextInput, Button, SafeAreaView, Alert, Pressable } from 'react-native';
-import {AsyncStorage} from '@react-native-async-storage/async-storage';
 
 const OrderScreen = ({route, navigation }) => {
   const [menuItems, setMenuItems] = useState([]);
@@ -451,4 +450,3 @@ const createStyles = (isTablet) => StyleSheet.create({
 });
 
 export default OrderScreen;
-
