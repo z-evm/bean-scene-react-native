@@ -354,7 +354,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 32,
     borderRadius: 4,
     elevation: 3,
-    backgroundColor: 'red',
+    backgroundColor: '#000',
     width:'100%',
     fontFamily: 'Open Sans',
   },
