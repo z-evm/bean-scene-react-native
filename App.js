@@ -29,6 +29,8 @@ export default function App() {
               tabBarIcon: () => (
                   <Icon name='book' size={20} />
               ),
+              tabBarButton: () => null,
+              tabBarVisible:false, //hide tab bar on this screen
               headerTitle:"Reservation Screen"
           }}
           initialParams={{ tableId: undefined }} 
@@ -38,6 +40,8 @@ export default function App() {
               tabBarIcon: () => (
                   <Icon name='book' size={20} />
               ),
+              tabBarButton: () => null,
+              tabBarVisible:false, //hide tab bar on this screen
               headerTitle:"Order Screen"
           }}
         />
