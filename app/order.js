@@ -2,6 +2,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { View, Text, ScrollView, TouchableOpacity, StyleSheet, Dimensions, Modal, TextInput, Button, SafeAreaView, Alert, Pressable } from 'react-native';
 
 const OrderScreen = ({route, navigation }) => {
+  const [searchTerm, setSearchTerm] = useState('');
   const [menuItems, setMenuItems] = useState([]);
   const [selectedItem, setSelectedItem] = useState(null);
   const [modalVisible, setModalVisible] = useState(false); 
@@ -277,6 +278,10 @@ const OrderScreen = ({route, navigation }) => {
     }
   };
 
+  const filteredMenuItem=menuItems.filter(item =>{
+    item.category.toLowerCase().includes(searchTerm.toLowerCase());
+  })
+
   return (
     <View style={styles.container}>{/* all screen container  */}
 
@@ -324,8 +329,15 @@ const OrderScreen = ({route, navigation }) => {
       {/* Menu Section */}
       <View style={styles.menuSection}>{/* menu container */}
         <Text style={styles.header}>Menu Items</Text>
+        {/*searching text */}
+        <TextInput
+        style={styles.searchBox}
+        placeholder="Search menu category..."
+        value={searchTerm}
+        onChangeText={(text) => setSearchTerm(text)}
+        />
         <ScrollView style={styles.menuList}>
-          {menuItems.map((item) => ( 
+          {filteredMenuItem.map((item) => ( 
             <Pressable
               key={item._id}
               style={styles.item}
@@ -412,7 +424,7 @@ const createStyles = (isTablet) => StyleSheet.create({
  
   orderSection: { width: isTablet ? '30%' : '100%', height: isTablet ? '100%' : '50%', padding: 10, backgroundColor: '#fff', borderRadius: 10, borderWidth: 1, borderColor: '#000' },
   
-  header: { fontSize: 18, fontWeight: 'bold', textAlign: 'center' },
+  header: { fontSize: 22, fontWeight: 'bold', textAlign: 'center' },
   
   item: { padding: 10, marginVertical: 4, backgroundColor: '#ffffff', borderWidth: 1, borderColor: '#cccccc', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
   
@@ -447,6 +459,8 @@ const createStyles = (isTablet) => StyleSheet.create({
   manageButton: { marginTop: 10, padding: 10, backgroundColor: '#1E90FF', borderRadius: 5, alignItems: 'center' },
   
   manageButtonText: { color: '#fff', fontWeight: 'bold' },
-});
+  searchBox: {width:'50%' ,alignSelf: 'center',marginBottom: 10,marginTop:10,padding: 10,borderRadius: 5,borderColor: '#ccc',borderWidth: 1,}
 
+});
+ 
 export default OrderScreen;
