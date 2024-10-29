@@ -22,7 +22,9 @@ const OrderScreen = ({route, navigation }) => {
   const isTablet = windowWidth >= 768;
   const styles = useMemo(() => createStyles(isTablet), [isTablet]);
 
-  useEffect(() => {
+
+  // fetch all  menu item
+  useEffect(() => { 
     fetchMenuItems();
   }, []);
 
@@ -33,12 +35,46 @@ const OrderScreen = ({route, navigation }) => {
         const data = await response.json();
         setMenuItems(data);
       } else {
-        console.error('Error fetching menu items:', response.statusText);
+        console.error('Error fetching menu items from server:', response.statusText);
+        Alert.alert('Error fetching menu items from server:')
       }
     } catch (error) {
-      console.error('Error fetching menu items:', error);
+      console.error('Network','Error fetching menu items:', error);
+      Alert.alert('Network','Error fetching menu items:', error)
     }
   };
+
+
+
+
+  //fect order data 
+  
+  useEffect (() => {
+    if(route.params?.orderId){
+      fetchOrderData(route.params.orderId);
+    }else{
+      
+    }
+  },[route.params?.orderId]);
+
+  const fetchOrderData = async (orderId) => {
+    try{
+      const response=await fetch(`http://192.168.57.221:3000/api/orders/${orderId}`);
+      if(response.ok){
+        const data=await resonse.json()
+        setOrderData(data);
+      }else{
+        console.error('Error fetching order data from server:', response.statusText);
+        Alert.alert('Error', 'Could not fetch the order data from server');
+      }
+    }catch (error){ 
+      console.error('Error fetching order data:', error);
+      Alert.alert('Error', 'an error accored while fetching the order data');
+    }
+  };
+  
+
+
 
   const pushOrderData = async () => { // define order data structure 
     const orderTicket = {
@@ -49,7 +85,7 @@ const OrderScreen = ({route, navigation }) => {
         price: item.price,
         qty: item.qty,
         notes: item.notes,
-        menuItemStatus: item.menuItemStatus,  // served or not 
+        menuItemStatus: item.menuItemStatus,  
       })),
     };
   
@@ -64,8 +100,8 @@ const OrderScreen = ({route, navigation }) => {
         Alert.alert('Success', 'Order successfully created');
 
         updateBookedTable=[...bookedTables]; 
-
-        if(orderData.orderStatus=== "CANCELED"){  // look the table status
+  
+        if(orderData.orderStatus=== "CANCEL" || orderData.orderStatus === "PAID"){  // look the table status
           updateBookedTable=updateBookedTable.filter(Id => id !==tableId)
         }
         else{
@@ -73,7 +109,6 @@ const OrderScreen = ({route, navigation }) => {
             updateBookedTable.push(tableId)
           }
         }
-         // navigate to floor plan
         setOrderData({
           orderId: null,
           orderDate: new Date().toISOString(),
@@ -98,25 +133,51 @@ const OrderScreen = ({route, navigation }) => {
   };
 
 
-  //fect order data 
-  
-  useEffect (() => {
-    fetchOrderDatas();
-  },[]);
 
-  const fetchOrderDatas = async () => {
-    try{
-      const resonse=await fetch('http://192.168.57.221:3000/api/Orders');
+
+
+
+  const UpdateOrderData = async () =>{ // updating order
+    if(!orderData.orderId){
+      console.error("Order Id missing");
+      return;
+    }
+
+    const orderTicket = {
+      ...orderData,
+      orderItems: orderData.orderItems.map(item => ({
+        menuItemId: item.menuItemId,
+        menuItemName: item.menuItemName,
+        price: item.price,
+        qty: item.qty,
+        notes: item.notes,
+        menuItemStatus: item.menuItemStatus,  
+      })),
+    };
+
+    try {
+      const response = await fetch(`http://192.168.57.221:3000/api/orders/${orderData.orderId}`, {  // post order 
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(orderTicket),
+      });
       if(response.ok){
-        const data=await resonse.json()
-        setOrderData(data);
+        Alert.alert("Order updated succesfully")
+        orderNoteModalVisible(false);
+        navigation.navigate('Floor', {bookedTables :updateBookedTable });
       }else{
-        console.error('Error fetching order data:', response.statusText);
+        const errorMessage=await response.text();
+        console.error('Error updating order:', errorMessage);
+        alert.alert('Error', 'Unable to update the order');
       }
-    }catch (error){ 
-      console.error('Error fetching order data:', error);
+      
+    } catch (error) {
+       consolelog('error updating order ;',error)
+       Alert.alert('Error', 'An error occurred while updating the order');
     }
   };
+
+
 
 
   const handleSelectItem = (item) => {
@@ -178,12 +239,18 @@ const OrderScreen = ({route, navigation }) => {
       orderItems: prevData.orderItems.filter(item => item.menuItemId !== menuItemId),
     }));
   };
-
+  
+  const statuMap={
+    PENDING: 'PAID',
+    PAID: 'CANCEL',
+    CANCEL: 'PENDING',
+  }
 
   const toggleOrderStatus = () => { // set up for order status
     setOrderData(prevData => ({
       ...prevData,
-      orderStatus: prevData.orderStatus === 'PENDING' ? 'PAID' : 'PENDING',
+      orderStatus: statuMap[prevData.orderStatus],
+     
     }));
   };
 
@@ -259,7 +326,7 @@ const OrderScreen = ({route, navigation }) => {
       {/* Order Summary Section */}
       <View style={styles.orderSection}>
         <Text style={styles.header}>Current Order</Text>
-        <Text>Table ID: {tableId}</Text> 
+        <Text>Table ID:{orderData?.Id}</Text> 
         <ScrollView>
           {orderData?.orderItems?.map((orderItem, index) => (
             <View key={index} style={styles.orderItem}>
@@ -283,8 +350,11 @@ const OrderScreen = ({route, navigation }) => {
         <SafeAreaView>
           <View style={styles.orderSummary}>
             <Text style={styles.orderSummaryText}>Status: {orderData.orderStatus}</Text>
+
             <Pressable onPress={toggleOrderStatus} style={styles.statusToggleButton}>
-            <Text style={styles.statusToggleButtonText}>Toggle to {orderData.orderStatus === 'PENDING' ? 'PAID':'PENDING'}</Text>
+            <Text style={styles.statusToggleButtonText}>
+              Toggle to {statuMap[orderData.orderStatus]}
+              </Text>
             </Pressable>
             <Text style={styles.orderSummaryText}>Total Items: {orderData.orderItems.reduce((total, item) => total + item.qty, 0)}</Text>{/* calculate item  */}
             <Text style={styles.orderSummaryText}>Total Cost: ${orderData.orderItems.reduce((total, item) => total + item.price * item.qty, 0).toFixed(2)}</Text>{/* calculate price  */}

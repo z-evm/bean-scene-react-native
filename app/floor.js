@@ -9,7 +9,7 @@ import {
 } from 'react-native';
 export function Floor({route, navigation}) {
   const { bookedTables = [] } = route?.params || {}; 
- 
+
   return (
   <SafeAreaView resizeMode="contain" style={styles.container}>
     <ScrollView>

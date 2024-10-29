@@ -4,7 +4,6 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import Icon from 'react-native-vector-icons/FontAwesome';
 
-import MenuScreen from './app/menu';
 import FloorScreen from './app/floor';
 import OrderScreen from './app/order';
 import ReservationScreen from './app/reservation';
@@ -20,7 +19,8 @@ export default function App() {
           options={{
               tabBarIcon: () => (
                   <Icon name='square' size={20} />
-              )
+              ),
+              headerTitle:"Floor Screen"
           }}
           initialParams={{ tableId: undefined }} 
         />
@@ -28,7 +28,8 @@ export default function App() {
           options={{
               tabBarIcon: () => (
                   <Icon name='book' size={20} />
-              )
+              ),
+              headerTitle:"Reservation Screen"
           }}
           initialParams={{ tableId: undefined }} 
         />
@@ -36,34 +37,24 @@ export default function App() {
           options={{
               tabBarIcon: () => (
                   <Icon name='book' size={20} />
-              )
+              ),
+              headerTitle:"Order Screen"
           }}
         />
-        <Tab.Screen name="Menu" component={MenuScreen} 
+        <Tab.Screen name="Admin" component={AdminScreen} 
           options={{
               tabBarIcon: () => (
                   <Icon name='table' size={20} />
-              )
+              ),
+              headerTitle:"Admin Screen"
           }}
           initialParams={{ tableId: undefined }} 
         />
-
-        <Tab.Screen name="Admin" component={AdminScreen} />
       </Tab.Navigator>
     </NavigationContainer>
   );
 }
 
-/*
-export default function App() {
-  return (
-    <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
-  );
-}
-*/
 const styles = StyleSheet.create({
   container: {
     flex: 1,

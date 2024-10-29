@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useEffect } from 'react';
-import {View,Text,TextInput,ScrollView,TouchableOpacity,StyleSheet,FlatList,Dimensions, Pressable,} from 'react-native';
+import {View,Text,TextInput,ScrollView,StyleSheet,FlatList,Dimensions, Pressable, Alert,} from 'react-native';
 
 const AdminScreen = () => {
   const [menuItems, setMenuItems] = useState([]); // Store menu items fetched from backend
@@ -62,6 +62,7 @@ const AdminScreen = () => {
         resetForm(); //reset input after the delete
       } else {
         console.error('Error deleting menu item:', response.statusText);
+        Alert.alert("Error deleting  the menu item ")
       }
     } catch (error) {
       console.error('Error deleting menu item:', error);
@@ -72,7 +73,7 @@ const AdminScreen = () => {
     const newItem = {
       ...form,
       ingredients: form.ingredients.split(',').map((ingredient) => ingredient.trim()), // stoare as array
-      dietary: form.dietary.split(',').map((diet) => diet.trim()), // stoare as array
+      dietary: form.dietary.split(',').map((dietary) => dietary.trim()), // stoare as array
     };
   
     try {
@@ -91,6 +92,10 @@ const AdminScreen = () => {
             prevItems.map((item) => (item._id === currentId ? updatedItem : item))
           );
         }
+        else{
+          console.error('Failed  to update menu item:', response.statusText);
+          Alert.alert("Update Error","Failed  to update menu item ")
+        }
       }
       // Add new item
        else {
@@ -104,11 +109,16 @@ const AdminScreen = () => {
           const savedItem = await response.json();
           setMenuItems((prevItems) => [...prevItems, savedItem]);
         }
+        else{
+          console.error('Failed  to add menu item:', response.statusText);
+          Alert.alert("Add Error","Failed  to add menu item ")
+        }
       }
   
       resetForm(); // reset 
     } catch (error) {
-      console.error('Error saving menu item:', error);
+      console.error('Network','Error saving menu item:', error);
+      Alert.alert('Network',"Error saving the menu item ")
     }
   };
 
@@ -130,7 +140,7 @@ const AdminScreen = () => {
             placeholder="Price"
             value={form.price ? form.price.toString() : ''} 
             keyboardType="numeric"                         
-            onChangeText={(number) => setForm({ ...form, price: Number(number) })} />       
+            onChangeText={(number) => setForm({ ...form, price: Number(number) })}/>       
           <TextInput style={styles.input} placeholder="Category" value={form.category} onChangeText={(text) => setForm({ ...form, category: text })} />
           <TextInput style={styles.input} placeholder="Ingredients (comma separated)" value={form.ingredients} onChangeText={(text) => setForm({ ...form, ingredients: text })} />
           <TextInput style={styles.input} placeholder="Dietary (comma separated)" value={form.dietary} onChangeText={(text) => setForm({ ...form, dietary: text })} />
@@ -149,9 +159,9 @@ const AdminScreen = () => {
               <Text onPress={() => handleSelectItem(item)} style={styles.itemText}>
                 {item.name} - ${item.price}
               </Text>
-              <TouchableOpacity style={styles.deleteButton} onPress={() => handleDelete(item._id)}>
+              <Pressable style={styles.deleteButton} onPress={() => handleDelete(item._id)}>
                 <Text style={styles.deleteButtonText}>Delete</Text>
-              </TouchableOpacity>
+              </Pressable>
             </View>
           )}
           extraData={menuItems} // Force FlatList to re-render when menuItems changes
@@ -173,6 +183,7 @@ const createStyles = (isTablet) =>
       flex: 1,
       marginRight: isTablet ? 20 : 0,
       marginBottom: isTablet ? 0 : 20,
+      borderRadius: 10, borderWidth: 1, borderColor: '#000', marginBottom: 20
     },
     listSection: {
       flex: 1,
