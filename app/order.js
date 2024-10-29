@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { View, Text, ScrollView, TouchableOpacity, StyleSheet, Dimensions, Modal, TextInput, Button, SafeAreaView, Alert, Pressable } from 'react-native';
+import {AsyncStorage} from '@react-native-async-storage/async-storage';
 
 const OrderScreen = ({route, navigation }) => {
   const [menuItems, setMenuItems] = useState([]);
@@ -132,7 +133,21 @@ const OrderScreen = ({route, navigation }) => {
     }
   };
 
+  _storeData = async () => {
 
+    try {
+      await AsyncStorage.setItem(
+        'tableId',
+        {tableId},
+      );
+      await AsyncStorage.setItem(
+        'orderStatus',
+        statuMap[prevData.orderStatus],
+      );
+    } catch (error) {
+      // Error saving data
+    }
+  };
 
 
 
@@ -250,8 +265,17 @@ const OrderScreen = ({route, navigation }) => {
     setOrderData(prevData => ({
       ...prevData,
       orderStatus: statuMap[prevData.orderStatus],
-     
     }));
+    if (orderData.orderStatus === "PENDING") {
+      bookedTables.push(tableId);
+      navigation.navigate('Floor', {
+        bookedTables: bookedTables,
+      });
+    } else {
+      navigation.navigate('Floor', {
+        bookedTables: bookedTables,
+      });
+    }
   };
 
   return (
@@ -326,7 +350,7 @@ const OrderScreen = ({route, navigation }) => {
       {/* Order Summary Section */}
       <View style={styles.orderSection}>
         <Text style={styles.header}>Current Order</Text>
-        <Text>Table ID:{orderData?.Id}</Text> 
+        <Text>Table ID:{tableId}</Text> 
         <ScrollView>
           {orderData?.orderItems?.map((orderItem, index) => (
             <View key={index} style={styles.orderItem}>
