@@ -13,7 +13,7 @@ export function Floor({route, navigation}) {
   if (bookedTables == null || bookedTables == undefined) {
     booktables = [];
   } else {
-    booktables = bookedTables;
+    booktables = bookedTables; 
   }
   return (
   <SafeAreaView resizeMode="contain" style={styles.container}>
