@@ -2,6 +2,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { View, Text, ScrollView, TouchableOpacity, StyleSheet, Dimensions, Modal, TextInput, Button, SafeAreaView, Alert, Pressable } from 'react-native';
 
 const OrderScreen = ({route, navigation }) => {
+  const [nextOrderId, setNextOrderId] = useState(1);
   const [searchTerm, setSearchTerm] = useState('');
   const [menuItems, setMenuItems] = useState([]);
   const [selectedItem, setSelectedItem] = useState(null);
@@ -9,12 +10,12 @@ const OrderScreen = ({route, navigation }) => {
   const [menuItemNote, setMenuItemNote] = useState('');
   const [orderNote, setOrderNote] = useState('');
   const [orderNoteModalVisible, setOrderNoteModalVisible] = useState(false);
-  const { tableId, bookedTables = [] } = route?.params || {}; // get table Id from floor plan 
+  const { tableId, orderId } = route.params; // get table Id from floor plan 
   const [orderData, setOrderData] = useState({
-    orderId: null,         //string 
+    orderId: orderId ||null,         //string 
     orderDate: new Date().toISOString(), //YYYY-MM-DDTHH:mm:ss.sssZ  "2023-08-17T18:53:12",
-    tableNumber: tableId, // come from plan table string 
     orderStatus: 'PENDING', // as default pending 
+    tableNumber: tableId, // come from plan table string 
     notes: '', // order note item note string 
     orderItems: [],  // order item array
   });
@@ -24,23 +25,26 @@ const OrderScreen = ({route, navigation }) => {
   const styles = useMemo(() => createStyles(isTablet), [isTablet]);
 
 
-  // fetch all  menu item
-  useEffect(() => { 
-    fetchMenuItems();
+
+
+  // fetch all  menu item 
+  useEffect(() => {
+    fetchMenuItems(); // Fetch items on initial load
   }, []);
 
   const fetchMenuItems = async () => {
     try {
-      const response = await fetch('http://192.168.57.221:3000/api/menuItems'); // get menu item for menu list
+      const response = await fetch('http://localhost:3000/api/menu-items');
       if (response.ok) {
         const data = await response.json();
+        console.log('Fetched Menu Items:', data);
         setMenuItems(data);
       } else {
-        console.error('Error fetching menu items from server:', response.statusText);
+        console.error('Error fetching menu items:', response.statusText);
         Alert.alert('Error fetching menu items from server:')
       }
     } catch (error) {
-      console.error('Network','Error fetching menu items:', error);
+      console.error('Error fetching menu items:', error);
       Alert.alert('Network','Error fetching menu items:', error)
     }
   };
@@ -60,9 +64,9 @@ const OrderScreen = ({route, navigation }) => {
 
   const fetchOrderData = async (orderId) => {
     try{
-      const response=await fetch(`http://192.168.57.221:3000/api/orders/${orderId}`);
+      const response=await fetch(`http://localhost:3000/api/orders/${orderId}`);
       if(response.ok){
-        const data=await resonse.json()
+        const data=await response.json()
         setOrderData(data);
       }else{
         console.error('Error fetching order data from server:', response.statusText);
@@ -73,55 +77,53 @@ const OrderScreen = ({route, navigation }) => {
       Alert.alert('Error', 'an error accored while fetching the order data');
     }
   };
-  
 
+  
 
 
   const pushOrderData = async () => { // define order data structure 
     const orderTicket = {
       ...orderData,
+      notes: orderData.notes || "",
       orderItems: orderData.orderItems.map(item => ({
-        menuItemId: item.menuItemId,
+        menuItemId: typeof item.menuItemId === 'object' ? item.menuItemId._id : item.menuItemId, 
         menuItemName: item.menuItemName,
         price: item.price,
         qty: item.qty,
-        notes: item.notes,
-        menuItemStatus: item.menuItemStatus,  
-      })),
+        notes: item.notes || "",
+        menuItemStatus: item.menuItemStatus
+      }))
     };
+    console.log('Order data being sent:', orderTicket);
   
     try {
-      const response = await fetch('http://192.168.57.221:3000/api/orders', {  // post order 
+      const response = await fetch('http://localhost:3000/api/orders', {  // post order 
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(orderTicket),
       });
   
       if (response.ok) {
+        const responseData = await response.json();
         Alert.alert('Success', 'Order successfully created');
 
-        updateBookedTable=[...bookedTables]; 
-  
-        if(orderData.orderStatus=== "CANCEL" || orderData.orderStatus === "PAID"){  // look the table status
-          updateBookedTable=updateBookedTable.filter(Id => id !==tableId)
-        }
-        else{
-          if(!updateBookedTable.includes(tableId)){
-            updateBookedTable.push(tableId)
-          }
-        }
+        setOrderData(prevData => ({
+          ...prevData,
+          orderId: responseData.orderId // Use parsed response to set `orderId`
+        }));
+
+        
         setOrderData({
           orderId: null,
           orderDate: new Date().toISOString(),
-          tableNumber: tableId,
+          tableNumber: orderData.tableNumber,
           orderStatus: 'PENDING',
           notes: '',
           orderItems: [],
         });
         setOrderNoteModalVisible(false); //close the modeal 
 
-        navigation.navigate('Floor', {bookedTables :updateBookedTable }); // after submit order return to floor plan.
-
+        navigation.navigate('Floor'); 
       } else {
         // if  resonse not succesfully gave error
         const errorMessage = await response.text();
@@ -133,45 +135,35 @@ const OrderScreen = ({route, navigation }) => {
     }
   };
 
-  _storeData = async () => {
 
-    try {
-      await AsyncStorage.setItem(
-        'tableId',
-        {tableId},
-      );
-      await AsyncStorage.setItem(
-        'orderStatus',
-        statuMap[prevData.orderStatus],
-      );
-    } catch (error) {
-      // Error saving data
-    }
-  };
-
-
-
-
-  const UpdateOrderData = async () =>{ // updating order
+  const UpdateOrderData = async () =>{ 
     if(!orderData.orderId){
       console.error("Order Id missing");
       return;
     }
 
     const orderTicket = {
-      ...orderData,
+      orderDate: orderData.orderDate,
+      orderId: orderData.orderId,
+      orderStatus: orderData.orderStatus,
+      tableNumber: orderData.tableNumber,
+      notes: orderData.notes || "", // Default empty string if no notes
       orderItems: orderData.orderItems.map(item => ({
         menuItemId: item.menuItemId,
         menuItemName: item.menuItemName,
         price: item.price,
         qty: item.qty,
-        notes: item.notes,
-        menuItemStatus: item.menuItemStatus,  
-      })),
+        notes: item.notes || "", // Default empty string if no notes
+        menuItemStatus: item.menuItemStatus
+      }))
     };
+    
+    console.log('Order data being sent:', JSON.stringify(orderTicket, null, 2));
+    
+      
 
     try {
-      const response = await fetch(`http://192.168.57.221:3000/api/orders/${orderData.orderId}`, {  // post order 
+      const response = await fetch(`http://localhost:3000/api/orders/${orderData.orderId}`, {  // post order 
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(orderTicket),
@@ -202,6 +194,8 @@ const OrderScreen = ({route, navigation }) => {
   };
 
   const handleConfirmOrder = () => {
+    if(!selectedItem) return;
+    
     const existingItemIndex = orderData.orderItems.findIndex(item => item.menuItemId === selectedItem.id); // if item have in  order list 
     const updatedOrderItems = [...orderData.orderItems];  // add order item 
 
@@ -213,7 +207,7 @@ const OrderScreen = ({route, navigation }) => {
       };
     } else { // if not existing push 
       updatedOrderItems.push({
-        menuItemId: selectedItem.id,
+        menuItemId: selectedItem._id,
         menuItemName: selectedItem.name,
         price: selectedItem.price,
         qty: 1,
@@ -278,9 +272,10 @@ const OrderScreen = ({route, navigation }) => {
     }
   };
 
-  const filteredMenuItem=menuItems.filter(item =>{
-    item.category.toLowerCase().includes(searchTerm.toLowerCase());
-  })
+  const filteredMenuItem = menuItems.filter(item =>
+    item.category.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+  
 
   return (
     <View style={styles.container}>{/* all screen container  */}
@@ -337,19 +332,23 @@ const OrderScreen = ({route, navigation }) => {
         onChangeText={(text) => setSearchTerm(text)}
         />
         <ScrollView style={styles.menuList}>
-          {filteredMenuItem.map((item) => ( 
-            <Pressable
-              key={item._id}
-              style={styles.item}
-              onPress={() => handleSelectItem(item)} >
-              <View style={styles.itemContent}>
-                <Text style={styles.itemName}>{item.name}</Text>{/* item name*/}
-                <Text style={styles.itemPrice}>{/* item price */}
-                  ${typeof item.price === 'number' ? item.price.toFixed(2) : 'N/A'}{/* 12.00 */}
-                </Text>
-              </View>
-            </Pressable>
-          ))}
+          {filteredMenuItem.length > 0 ? (
+            filteredMenuItem.map((item) => (
+              <Pressable
+                key={item._id}
+                style={styles.item}
+                onPress={() => handleSelectItem(item)}>
+                <View style={styles.itemContent}>
+                  <Text style={styles.itemName}>{item.name}</Text>
+                  <Text style={styles.itemPrice}>
+                    ${typeof item.price === 'number' ? item.price.toFixed(2) : 'N/A'}
+                  </Text>
+                </View>
+              </Pressable>
+            ))
+          ) : (
+            <Text style={styles.noItemsText}>No items found</Text>
+          )}
         </ScrollView>
 
         {/* Manage Button */}

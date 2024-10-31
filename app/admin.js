@@ -32,15 +32,17 @@ const AdminScreen = () => {
 
   const fetchMenuItems = async () => {
     try {
-      const response = await fetch('http://192.168.57.221:3000/api/menuItems');
+      const response = await fetch('http://localhost:3000/api/menu-items');
       if (response.ok) {
         const data = await response.json();
         setMenuItems(data);
       } else {
         console.error('Error fetching menu items:', response.statusText);
+        Alert.alert('Error fetching menu items from server:')
       }
     } catch (error) {
       console.error('Error fetching menu items:', error);
+      Alert.alert('Network','Error fetching menu items:', error)
     }
   };
 
@@ -56,7 +58,7 @@ const AdminScreen = () => {
 
   const handleDelete = async (_id) => {
     try {
-      const response = await fetch(`http://192.168.57.221:3000/api/menuItems/${_id}`, { 
+      const response = await fetch(`http://localhost:3000/api/menu-items/${_id}`, { 
               method: 'DELETE' 
              }); // search with Id
       if (response.ok) {
@@ -82,7 +84,7 @@ const AdminScreen = () => {
       let response;
       if (isEditing && currentId) { // if editing true and current id have update menu item 
         // Update existing item
-        response = await fetch(`http://192.168.57.221:3000/api/menuItems/${currentId}`, {
+        response = await fetch(`http://localhost:3000/api/menu-items/${currentId}`, {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(newItem),
@@ -101,7 +103,7 @@ const AdminScreen = () => {
       }
       // Add new item
        else {
-        response = await fetch('http://192.168.57.221:3000/api/menuItems', {
+        response = await fetch('http://localhost:3000/api/menu-items', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(newItem),
@@ -133,11 +135,11 @@ const AdminScreen = () => {
 
   const createPdf= async () => { //  pdf function
     const htmlContent = `
-      <H1>Menu Items<H1>
+      <H1>Menu Items</H1>
       ${menuItems.map((item) => `<p>${item.name}  -  ${item.price}</p>`).join("")}
     `
     try {
-      const option={
+      const options={
         html:htmlContent,
         fileName:"Menu Item",
         directory:"Documents"
