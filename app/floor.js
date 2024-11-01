@@ -59,7 +59,7 @@ export function Floor({ route, navigation }) {
                             const orderForTable = orders.find(order => order.tableNumber === tableNumber && order.orderStatus === "PENDING");
                             navigation.navigate('Order', {
                                 tableId:tableNumber,
-                                orderId: orderForTable ? orderForTable._id : null, 
+                                orderId: orderForTable ? orderForTable.orderId : null, 
                                 bookedTables
                             });
                         }}

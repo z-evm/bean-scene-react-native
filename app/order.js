@@ -4,7 +4,7 @@ import { View, Text, ScrollView, TouchableOpacity, StyleSheet, Dimensions, Modal
 const OrderScreen = ({route, navigation }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [menuItems, setMenuItems] = useState([]);
-  const [selectedItem, setSelectedItem] = useState(null);
+  const [selectedItem, setSelectedItem] = useState(null); 
   const [modalVisible, setModalVisible] = useState(false); 
   const [menuItemNote, setMenuItemNote] = useState('');
   const [orderNote, setOrderNote] = useState('');
@@ -15,7 +15,7 @@ const OrderScreen = ({route, navigation }) => {
     orderDate: new Date().toISOString(), //YYYY-MM-DDTHH:mm:ss.sssZ  "2023-08-17T18:53:12",
     orderStatus: 'PENDING', // as default pending 
     tableNumber: tableId, // come from plan table string 
-    notes: '', // order note item note string 
+    notes: orderNote , // order note item note string 
     orderItems: [],  // order item array
   });
 
@@ -23,7 +23,15 @@ const OrderScreen = ({route, navigation }) => {
   const isTablet = windowWidth >= 768;
   const styles = useMemo(() => createStyles(isTablet), [isTablet]);
 
-
+  const resetOrderData = () => {
+    setOrderData({
+      orderDate: new Date().toISOString(),
+      orderStatus: 'PENDING',
+      tableNumber: route.params?.tableId || '',
+      notes: '',
+      orderItems: [],
+    });
+  };
 
 
   // fetch all  menu item 
@@ -38,6 +46,7 @@ const OrderScreen = ({route, navigation }) => {
         const data = await response.json();
         console.log('Fetched Menu Items:', data);
         setMenuItems(data);
+        console.log(setMenuItems)
       } else {
         console.error('Error fetching menu items:', response.statusText);
         Alert.alert('Error fetching menu items from server:')
@@ -82,14 +91,16 @@ const OrderScreen = ({route, navigation }) => {
 
   const pushOrderData = async () => { // define order data structure 
     const orderTicket = {
-      ...orderData,
-      notes: orderData.notes || "",
+      orderDate: orderData.orderDate,
+      orderStatus: orderData.orderStatus,
+      tableNumber: orderData.tableNumber,
+      notes: orderData.notes || "", // Default empty string if no notes
       orderItems: orderData.orderItems.map(item => ({
-        menuItemId: typeof item.menuItemId === 'object' ? item.menuItemId._id : item.menuItemId, 
+        menuItemId: item.menuItemId,
         menuItemName: item.menuItemName,
         price: item.price,
         qty: item.qty,
-        notes: item.notes || "",
+        notes: item.notes || "", // Default empty string if no notes
         menuItemStatus: item.menuItemStatus
       }))
     };
@@ -105,21 +116,14 @@ const OrderScreen = ({route, navigation }) => {
       if (response.ok) {
         const responseData = await response.json();
         Alert.alert('Success', 'Order successfully created');
+        resetOrderData()
 
         setOrderData(prevData => ({
           ...prevData,
           orderId: responseData.orderId // Use parsed response to set `orderId`
         }));
 
-        
-        setOrderData({
-          orderId: null,
-          orderDate: new Date().toISOString(),
-          orderStatus: 'PENDING',
-          tableNumber: orderData.tableNumber,
-          notes: '',
-          orderItems: [],
-        });
+       
         setOrderNoteModalVisible(false); //close the modeal 
 
         navigation.navigate('Floor'); 
@@ -185,12 +189,15 @@ const OrderScreen = ({route, navigation }) => {
 
   };
 
+
+ 
+
   const handleSubmitOrder = async () => {
     if (orderData?.orderItems?.length === 0) {
       Alert.alert('Error', 'No items in the order');
       return;
     }
-  
+    setOrderData(prevData => ({ ...prevData, notes: orderNote })); // make sure 
     if (orderId) {
       // Update order if orderId exists
       await UpdateOrderData(orderId);
@@ -206,7 +213,7 @@ const OrderScreen = ({route, navigation }) => {
 
 
 
-  const handleSelectItem = (item) => {
+  const handleSelectItem = (item) => { // when press menu item 
     setSelectedItem(item); // choose item 
     setMenuItemNote(''); // create note 
     setModalVisible(true); // modal open
@@ -233,15 +240,16 @@ const OrderScreen = ({route, navigation }) => {
         notes: menuItemNote,
         menuItemStatus: 'ORDERED',
       });
+      setOrderData(prevData => ({
+        ...prevData,
+        orderItems: updatedOrderItems,
+        notes: orderNote
+      }));
+      setModalVisible(false);
+    }
     }
 
-    setOrderData(prevData => ({
-      ...prevData,
-      orderItems: updatedOrderItems,
-      notes: orderNote
-    }));
-    setModalVisible(false);
-  };
+    
 
   const incrementOrderQty = (menuItemId) => {
     setOrderData(prevData => ({
@@ -267,14 +275,6 @@ const OrderScreen = ({route, navigation }) => {
       orderItems: prevData.orderItems.filter((_, i) => i !== index),
     }));
   };
-  const handleChangeItemStatus = (menuItemId, newStatus) => {
-    setOrderData(prevData => ({
-      ...prevData,
-      orderItems: prevData.orderItems.map(item =>
-        item.menuItemId === menuItemId ? { ...item, menuItemStatus: newStatus } : item
-      ),
-    }));
-  };
   
   
   const statuMap={
@@ -284,11 +284,15 @@ const OrderScreen = ({route, navigation }) => {
   }
 
   const toggleOrderStatus = () => {
-    setOrderData(prevData => ({
-      ...prevData,
-      orderStatus: statuMap[prevData.orderStatus] || prevData.orderStatus // toggles status based on current status
-    }));
+    setOrderData(prevData => {
+      const newStatus = statuMap[prevData.orderStatus] || 'PENDING'; // Fallback to 'PENDING' if no match
+      return {
+        ...prevData,
+        orderStatus: newStatus 
+      };
+    });
   };
+
   const toggleItemStatus = (index) => {
     setOrderData(prevData => ({
       ...prevData,
@@ -299,12 +303,12 @@ const OrderScreen = ({route, navigation }) => {
       ),
     }));
   };
-  
-
-  const filteredMenuItem = menuItems.filter(item =>
-    item.category.toLowerCase().includes(searchTerm.toLowerCase())
+  //searh menu item based on menu item name 
+  const filteredMenuItem = menuItems.filter(
+    item => item && item.name && item.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
   
+
 
   return (
     <View style={styles.container}>{/* all screen container  */}
@@ -336,7 +340,12 @@ const OrderScreen = ({route, navigation }) => {
             <View style={{flexDirection:'row',justifyContent:'space-between',paddingHorizontal: 10}}>
               <View style={{marginRight:10}}>
                 <Button title={orderId ? "Update Order" : "Create Order"}  
-                onPress={handleSubmitOrder}/>
+                 onPress={() => {
+                  console.log(orderNote)
+                  handleSubmitOrder();  // Trigger order submission or update
+                  setOrderNoteModalVisible(false); // Close modal after submission
+                  navigation.goBack(); // to floor
+                }}/>
             </View>
             <View style={{marginRight:10}}>
               <Button title="Cancel" onPress={() => setOrderNoteModalVisible(false)} />
@@ -356,6 +365,7 @@ const OrderScreen = ({route, navigation }) => {
         value={searchTerm}
         onChangeText={(text) => setSearchTerm(text)}
         />
+        {/*menu item scroll view */}
         <ScrollView style={styles.menuList}>
           {filteredMenuItem.length > 0 ? (
             filteredMenuItem.map((item) => (
@@ -453,11 +463,11 @@ const createStyles = (isTablet) => StyleSheet.create({
   
   noteInput: { height: 40, borderColor: '#ccc', borderWidth: 1, paddingHorizontal: 10, backgroundColor: '#fff', marginBottom: 20, width: '100%' },
   
-  menuSection: { width: isTablet ? '70%' : '100%', height: isTablet ? '100%' : '50%', padding: 10, backgroundColor: '#fff', borderRadius: 10, borderWidth: 1, borderColor: '#000', marginBottom: 20 },
+  menuSection: { width: isTablet ? '50%' : '100%', height: isTablet ? '100%' : '50%', padding: 10, backgroundColor: '#fff', borderRadius: 10, borderWidth: 1, borderColor: '#000', marginBottom: 20 },
  
   menuList: { flex: 1 },
  
-  orderSection: { width: isTablet ? '30%' : '100%', height: isTablet ? '100%' : '50%', padding: 10, backgroundColor: '#fff', borderRadius: 10, borderWidth: 1, borderColor: '#000' },
+  orderSection: { width: isTablet ? '50%' : '100%', height: isTablet ? '100%' : '50%', padding: 10, backgroundColor: '#fff', borderRadius: 10, borderWidth: 1, borderColor: '#000' },
   
   header: { fontSize: 22, fontWeight: 'bold', textAlign: 'center' },
   
@@ -496,14 +506,7 @@ const createStyles = (isTablet) => StyleSheet.create({
   manageButtonText: { color: '#fff', fontWeight: 'bold' },
   searchBox: {width:'50%' ,alignSelf: 'center',marginBottom: 10,marginTop:10,padding: 10,borderRadius: 5,borderColor: '#ccc',borderWidth: 1,},
   statusButton: { padding: 8, marginHorizontal: 5, backgroundColor: '#ddd', borderRadius: 5 },
-  statusText: {
-    fontSize: 14,
-    color: '#008000', // Green color for "Served" status; you can customize this
-    fontWeight: 'bold',
-    marginTop: 4,
-  },
-
-  
+  statusText: {fontSize: 14,color: '#008000', fontWeight: 'bold',marginTop: 4,},
 });
  
 export default OrderScreen;
