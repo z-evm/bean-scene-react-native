@@ -3,6 +3,7 @@ import {View,Text,TextInput,ScrollView,StyleSheet,FlatList,Dimensions, Pressable
 import RNHTMLtoPDF from 'react-native-html-to-pdf';
 
 
+
 const AdminScreen = () => {
   const [menuItems, setMenuItems] = useState([]); // Store menu items fetched from backend
   const [form, setForm] = useState({
@@ -133,24 +134,27 @@ const AdminScreen = () => {
   };
 
 
-  const createPdf= async () => { //  pdf function
+  const createPdf = async () => { 
     const htmlContent = `
-      <H1>Menu Items</H1>
-      ${menuItems.map((item) => `<p>${item.name}  -  ${item.price}</p>`).join("")}
-    `
+      <h1>Menu Items</h1>
+      ${menuItems.map(item => `<p>${item.name} - $${item.price}</p>`).join('')}
+    `;
+  
     try {
-      const options={
-        html:htmlContent,
-        fileName:"Menu Item",
-        directory:"Documents"
+      const options = {
+        html: htmlContent,
+        fileName: 'Menu_Items',
+        directory: 'Documents',
       };
-      const file=await RNHTMLtoPDF.convert(options)
+  
+      const file = await RNHTMLtoPDF.convert(options);
       Alert.alert('PDF Generated', `PDF saved to: ${file.filePath}`);
     } catch (error) {
       console.error('Error generating PDF:', error);
       Alert.alert('Error', 'Could not generate PDF');
     }
-  }
+  };
+  
 
   return (
     <View style={styles.container}> 
@@ -188,7 +192,7 @@ const AdminScreen = () => {
               </Pressable>
             </View>
           )}
-          extraData={menuItems} // Force FlatList to re-render when menuItems changes
+          extraData={menuItems} 
         />
         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }} >
           <Button  title='Download Menu Pdf' onPress={createPdf}/>

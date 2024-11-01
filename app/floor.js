@@ -11,7 +11,7 @@ import {
 
 export function Floor({ route, navigation }) {
 
-  const { bookedTables } = route?.params || {}; 
+  const [bookedTables, setBookedTables] = useState(route?.params?.bookedTables || []);
   const [orders, setOrders] = useState([]); 
   const allTables = ["M1", "M2", "M3", "M4", "M5", "M6", "M7", "M8", "M9", "M10", 
                      "O1", "O2", "O3", "O4", "O5", "O6", "O7", "O8", "O9", "O10",
@@ -22,6 +22,9 @@ export function Floor({ route, navigation }) {
     fetchOrderData();
   }, []);
 
+  useEffect(() => {
+    setBookedTables(allTables.filter(isTableBooked));
+  }, [orders]);
 
   const fetchOrderData = async () => {
     try {
@@ -57,6 +60,7 @@ export function Floor({ route, navigation }) {
                             navigation.navigate('Order', {
                                 tableId:tableNumber,
                                 orderId: orderForTable ? orderForTable._id : null, 
+                                bookedTables
                             });
                         }}
                     >
