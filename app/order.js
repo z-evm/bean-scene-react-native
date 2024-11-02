@@ -64,12 +64,12 @@ const OrderScreen = ({route, navigation }) => {
   //fect order data 
   
   useEffect (() => {
-    if(route.params?.orderId){
-      fetchOrderData(route.params.orderId);
+    if (orderId) {
+      fetchOrderData(orderId);
     }else{
       resetOrderData();
     }
-  },[route.params?.orderId]);
+  },[tableId, orderId]);
 
   const fetchOrderData = async (orderId) => {
     try{
@@ -118,7 +118,9 @@ const OrderScreen = ({route, navigation }) => {
       if (response.ok) {
         const responseData = await response.json();
         Alert.alert('Success', 'Order successfully created');
-        navigation.navigate('Floor');
+        resetOrderData();
+       // navigation.navigate('Floor');
+
         
 
         setOrderData(prevData => ({
@@ -129,7 +131,7 @@ const OrderScreen = ({route, navigation }) => {
        
         setOrderNoteModalVisible(false); //close the modeal 
 
-        navigation.navigate('Floor'); 
+       // navigation.navigate('Floor');
       } else {
         // if  resonse not succesfully gave error
         const errorMessage = await response.text();
@@ -139,6 +141,7 @@ const OrderScreen = ({route, navigation }) => {
       console.error('Error creating order:', error);
       Alert.alert('Error', 'Unable to connect to the server');
     }
+    
   };
 
 
@@ -177,7 +180,8 @@ const OrderScreen = ({route, navigation }) => {
       if(response.ok){
         Alert.alert("Order updated succesfully")
         orderNoteModalVisible(false);
-        navigation.navigate('Floor');
+        resetOrderData();
+       // navigation.navigate('Floor');
        
       }else{
         const errorMessage=await response.text();
@@ -354,6 +358,7 @@ const OrderScreen = ({route, navigation }) => {
                   console.log("Order Note before submission:", orderNote);
                   handleSubmitOrder();  // Trigger order submission or update
                   setOrderNoteModalVisible(false); // Close modal after submission
+                  navigation.navigate('Floor');
                 }}/>
             </View>
             <View style={{marginRight:10}}>
