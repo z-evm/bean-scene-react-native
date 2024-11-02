@@ -31,6 +31,7 @@ const OrderScreen = ({route, navigation }) => {
       notes: '',
       orderItems: [],
     });
+    setOrderNote('');
   };
 
 
@@ -76,6 +77,7 @@ const OrderScreen = ({route, navigation }) => {
       if(response.ok){
         const data=await response.json()
         setOrderData(data);
+        setOrderNote(data.notes || ''); 
       }else{
         console.error('Error fetching order data from server:', response.statusText);
         Alert.alert('Error', 'Could not fetch the order data from server');
@@ -94,15 +96,15 @@ const OrderScreen = ({route, navigation }) => {
       orderDate: orderData.orderDate,
       orderStatus: orderData.orderStatus,
       tableNumber: orderData.tableNumber,
-      notes: orderData.notes || "", // Default empty string if no notes
+      notes: orderNote || '', // Directly use `orderNote`
       orderItems: orderData.orderItems.map(item => ({
         menuItemId: item.menuItemId,
         menuItemName: item.menuItemName,
         price: item.price,
         qty: item.qty,
-        notes: item.notes || "", // Default empty string if no notes
-        menuItemStatus: item.menuItemStatus
-      }))
+        notes: item.notes || '', // Item-specific notes
+        menuItemStatus: item.menuItemStatus,
+      })),
     };
     console.log('Order data being sent:', orderTicket);
   
@@ -197,7 +199,13 @@ const OrderScreen = ({route, navigation }) => {
       Alert.alert('Error', 'No items in the order');
       return;
     }
-    setOrderData(prevData => ({ ...prevData, notes: orderNote })); // make sure 
+    console.log(`Order Note before submission: ${orderNote}`);
+    setOrderData(prevData => ({ ...prevData, notes: orderNote || '' }));
+
+    await new Promise(resolve => setTimeout(resolve, 0));
+
+  // Log the updated notes after updating
+    console.log(`Updated Order Data Notes: ${orderNote}`);
     if (orderId) {
       // Update order if orderId exists
       await UpdateOrderData(orderId);
@@ -335,16 +343,15 @@ const OrderScreen = ({route, navigation }) => {
       <Modal animationType="slide" transparent={true} visible={orderNoteModalVisible} onRequestClose={() => setOrderNoteModalVisible(false)}>
         <View style={styles.modalContainer}>
           <View style={styles.modalView}>
-            <Text style={styles.modalText}>Add a note for the entire order</Text>
-            <TextInput style={styles.noteInput} placeholder="Order note" value={orderNote} onChangeText={setOrderNote} />
+          <Text style={styles.modalText}>Order Note</Text>
+            <TextInput style={styles.noteInput} placeholder="Order note" value={ orderNote} onChangeText={setOrderNote} />
             <View style={{flexDirection:'row',justifyContent:'space-between',paddingHorizontal: 10}}>
               <View style={{marginRight:10}}>
                 <Button title={orderId ? "Update Order" : "Create Order"}  
                  onPress={() => {
-                  console.log(orderNote)
+                  console.log("Order Note before submission:", orderNote);
                   handleSubmitOrder();  // Trigger order submission or update
                   setOrderNoteModalVisible(false); // Close modal after submission
-                  navigation.goBack(); // to floor
                 }}/>
             </View>
             <View style={{marginRight:10}}>
@@ -504,8 +511,11 @@ const createStyles = (isTablet) => StyleSheet.create({
   manageButton: { marginTop: 10, padding: 10, backgroundColor: '#1E90FF', borderRadius: 5, alignItems: 'center' },
   
   manageButtonText: { color: '#fff', fontWeight: 'bold' },
+
   searchBox: {width:'50%' ,alignSelf: 'center',marginBottom: 10,marginTop:10,padding: 10,borderRadius: 5,borderColor: '#ccc',borderWidth: 1,},
+
   statusButton: { padding: 8, marginHorizontal: 5, backgroundColor: '#ddd', borderRadius: 5 },
+
   statusText: {fontSize: 14,color: '#008000', fontWeight: 'bold',marginTop: 4,},
 });
  
