@@ -67,7 +67,7 @@ const OrderScreen = ({route, navigation }) => {
     if(route.params?.orderId){
       fetchOrderData(route.params.orderId);
     }else{
-      
+      resetOrderData();
     }
   },[route.params?.orderId]);
 
@@ -118,7 +118,8 @@ const OrderScreen = ({route, navigation }) => {
       if (response.ok) {
         const responseData = await response.json();
         Alert.alert('Success', 'Order successfully created');
-        resetOrderData()
+        navigation.navigate('Floor');
+        
 
         setOrderData(prevData => ({
           ...prevData,
@@ -176,7 +177,8 @@ const OrderScreen = ({route, navigation }) => {
       if(response.ok){
         Alert.alert("Order updated succesfully")
         orderNoteModalVisible(false);
-        navigation.navigate('Floor', {bookedTables :updateBookedTable });
+        navigation.navigate('Floor');
+       
       }else{
         const errorMessage=await response.text();
         console.error('Error updating order:', errorMessage);
