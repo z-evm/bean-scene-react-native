@@ -1,6 +1,7 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import {View,Text,TextInput,ScrollView,StyleSheet,FlatList,Dimensions, Pressable, Alert, Button,} from 'react-native';
-import RNHTMLtoPDF from 'react-native-html-to-pdf';
+import * as Print from 'expo-print';
+import { shareAsync } from 'expo-sharing';
 
 
 
@@ -134,25 +135,17 @@ const AdminScreen = () => {
   };
 
 
-  const createPdf = async () => { 
-    const htmlContent = `
+ 
+
+  const createPdf = async () => {
+    const html = `
       <h1>Menu Items</h1>
       ${menuItems.map(item => `<p>${item.name} - $${item.price}</p>`).join('')}
     `;
-  
-    try {
-      const options = {
-        html: htmlContent,
-        fileName: 'Menu_Items',
-        directory: 'Documents',
-      };
-  
-      const file = await RNHTMLtoPDF.convert(options);
-      Alert.alert('PDF Generated', `PDF saved to: ${file.filePath}`);
-    } catch (error) {
-      console.error('Error generating PDF:', error);
-      Alert.alert('Error', 'Could not generate PDF');
-    }
+    // On iOS/android prints the given html. On web prints the HTML from the current page.
+    const { uri } = await Print.printToFileAsync({ html });
+    console.log('File has been saved to:', uri);
+    await shareAsync(uri, { UTI: '.pdf', mimeType: 'application/pdf' });
   };
   
 
