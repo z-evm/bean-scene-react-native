@@ -358,7 +358,9 @@ const OrderScreen = ({route, navigation }) => {
                   console.log("Order Note before submission:", orderNote);
                   handleSubmitOrder();  // Trigger order submission or update
                   setOrderNoteModalVisible(false); // Close modal after submission
-                  navigation.navigate('Floor');
+                  setTimeout(() => {
+                    navigation.navigate('Floor', { refresh: true });
+                  }, 1); 
                 }}/>
             </View>
             <View style={{marginRight:10}}>

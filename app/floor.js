@@ -8,6 +8,7 @@ import {
   ScrollView,
   Alert
 } from 'react-native';
+import { useFocusEffect } from '@react-navigation/native';
 
 export function Floor({ route, navigation }) {
 
@@ -18,17 +19,20 @@ export function Floor({ route, navigation }) {
                      "B1", "B2", "B3", "B4", "B5", "B6", "B7", "B8", "B9", "B10"]; 
 
 
-  useEffect(() => {
-    fetchOrderData();
-  }, []);
+ useFocusEffect(
+    React.useCallback(() => {
+      fetchOrderData();
+    }, [])
+  );
 
   useEffect(() => {
     setBookedTables(allTables.filter(isTableBooked));
+    
   }, [orders]);
 
   const fetchOrderData = async () => {
     try {
-      const response = await fetch(`http://localhost:3000/api/orders`); // Ensure correct endpoint
+      const response = await fetch(`http://192.168.14.221:3000/api/orders`); // Ensure correct endpoint
       if (response.ok) {
         const data = await response.json();
         setOrders(data); 
@@ -45,9 +49,9 @@ export function Floor({ route, navigation }) {
 
   
   const isTableBooked = (tableNumber) => {
-    return orders.some(order => order.tableNumber === tableNumber && order.orderStatus === "PENDING");
+    return orders.filter(order => order.tableNumber === tableNumber && order.orderStatus === "PENDING").length > 0;
   };
-
+  
   return (
     <SafeAreaView style={styles.container}>
         <ScrollView>
