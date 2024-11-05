@@ -1,38 +1,30 @@
 import React, { useState, useEffect } from 'react';
-import {
-  StyleSheet,
-  View,
-  SafeAreaView,
-  Text,
-  Pressable,
-  ScrollView,
-  Alert
-} from 'react-native';
+import {StyleSheet,View,SafeAreaView,Text,Pressable,ScrollView,Alert} from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 
 export function Floor({ route, navigation }) {
 
-  const [bookedTables, setBookedTables] = useState(route?.params?.bookedTables || []);
-  const [orders, setOrders] = useState([]); 
+  const [bookedTables, setBookedTables] = useState([]); // stora  booked table id
+  const [orders, setOrders] = useState([]);  //stora current
   const allTables = ["M1", "M2", "M3", "M4", "M5", "M6", "M7", "M8", "M9", "M10", 
                      "O1", "O2", "O3", "O4", "O5", "O6", "O7", "O8", "O9", "O10",
                      "B1", "B2", "B3", "B4", "B5", "B6", "B7", "B8", "B9", "B10"]; 
 
 
- useFocusEffect(
-    React.useCallback(() => {
+ useFocusEffect( //  is navigation hood trigger when screen comes
+    React.useCallback(() => { // os used to  memorize function, avoding unnecessary re-renders
       fetchOrderData();
-    }, [])
+    }, []) 
   );
 
   useEffect(() => {
     setBookedTables(allTables.filter(isTableBooked));
     
-  }, [orders]);
+  }, [orders]); // when ever order changes call again
 
   const fetchOrderData = async () => {
     try {
-      const response = await fetch(`http://192.168.14.221:3000/api/orders`); // Ensure correct endpoint
+      const response = await fetch(`http://localhost:3000/api/orders`); // Ensure correct endpoint
       if (response.ok) {
         const data = await response.json();
         setOrders(data); 
@@ -51,11 +43,16 @@ export function Floor({ route, navigation }) {
   const isTableBooked = (tableNumber) => {
     return orders.filter(order => order.tableNumber === tableNumber && order.orderStatus === "PENDING").length > 0;
   };
+
+  const sortedTables = [
+    ...allTables.filter(isTableBooked), 
+    ...allTables.filter(table => !isTableBooked(table)) 
+  ];
   
   return (
     <SafeAreaView style={styles.container}>
-        <ScrollView>
-            {allTables.map((tableNumber) => (
+        <ScrollView> {/*loop for each of table */}
+            {sortedTables.map((tableNumber) => (
                 <View key={tableNumber} style={styles.fixToText}>
                     <Pressable 
                         style={[isTableBooked(tableNumber) ? styles.reserveButtonRed : styles.reserveButton]}
@@ -64,7 +61,6 @@ export function Floor({ route, navigation }) {
                             navigation.navigate('Order', {
                                 tableId:tableNumber,
                                 orderId: orderForTable ? orderForTable.orderId : null, 
-                                bookedTables
                             });
                         }}
                     >

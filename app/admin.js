@@ -176,13 +176,15 @@ const AdminScreen = () => {
           data={menuItems}
           keyExtractor={(item) => item._id.toString()} // get item with _Id
           renderItem={({ item }) => (
-            <View style={styles.listItem}>
-              <Text onPress={() => handleSelectItem(item)} style={styles.itemText}>
-                {item.name} - ${item.price}
-              </Text>
-              <Pressable style={styles.deleteButton} onPress={() => handleDelete(item._id)}>
-                <Text style={styles.deleteButtonText}>Delete</Text>
-              </Pressable>
+            <View style={styles.listItemContainer}>
+              <View style={styles.listItem}>
+                <Text onPress={() => handleSelectItem(item)} style={styles.itemText}>
+                  {item.name} - ${item.price}
+                </Text>
+                <Pressable style={styles.deleteButton} onPress={() => handleDelete(item._id)}>
+                  <Text style={styles.deleteButtonText}>Delete</Text>
+                </Pressable>
+              </View>
             </View>
           )}
           extraData={menuItems} 
@@ -222,9 +224,14 @@ const createStyles = (isTablet) =>
       marginBottom: 10,
       borderWidth: 1,
       borderColor: '#cccccc',
-      padding: 10,
-      borderRadius: 5,
-    },
+      padding: 15,           
+      paddingBottom: 20,     
+      borderRadius: 8,       
+      fontSize: 16,          
+      width: '100%',        
+      backgroundColor: '#f9f9f9', 
+    }
+    ,
     button: {
       backgroundColor: '#4CAF50',
       padding: 10,
@@ -237,14 +244,25 @@ const createStyles = (isTablet) =>
       fontSize: 16,
       fontWeight: 'bold',
     },
+    listItemContainer: {
+      marginBottom: 10, 
+      padding: 10, 
+      backgroundColor: '#f9f9f9', 
+      borderRadius: 10,
+      shadowColor: '#000', 
+      shadowOpacity: 0.1,
+      shadowOffset: { width: 0, height: 2 },
+      shadowRadius: 4,
+      elevation: 3, 
+    },
     listItem: {
-      flexDirection: 'row',
+      flexDirection: 'row', 
       justifyContent: 'space-between',
       alignItems: 'center',
-      padding: 10,
-      backgroundColor: '#f0f0f0',
-      marginBottom: 5,
-      borderRadius: 5,
+      padding: 10, 
+      borderRadius: 10, 
+      borderWidth: 2, 
+      borderColor: '#000', 
     },
     itemText: {
       flex: 1,

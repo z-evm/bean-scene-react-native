@@ -1,15 +1,16 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { View, Text, ScrollView, TouchableOpacity, StyleSheet, Dimensions, Modal, TextInput, Button, SafeAreaView, Alert, Pressable } from 'react-native';
+import { View, Text, ScrollView, StyleSheet, Dimensions, Modal, TextInput, Button, SafeAreaView, Alert, Pressable } from 'react-native';
+import { useFocusEffect } from '@react-navigation/native';
 
 const OrderScreen = ({route, navigation }) => {
-  const [searchTerm, setSearchTerm] = useState('');
-  const [menuItems, setMenuItems] = useState([]);
-  const [selectedItem, setSelectedItem] = useState(null); 
+  const [searchTerm, setSearchTerm] = useState(''); // Stores the text for filtering menu items by name.
+  const [menuItems, setMenuItems] = useState([]); // stora menu item 
+  const [selectedItem, setSelectedItem] = useState(null);  
   const [modalVisible, setModalVisible] = useState(false); 
+  const [orderNoteModalVisible, setOrderNoteModalVisible] = useState(false);
   const [menuItemNote, setMenuItemNote] = useState('');
   const [orderNote, setOrderNote] = useState('');
-  const [orderNoteModalVisible, setOrderNoteModalVisible] = useState(false);
-  const { tableId, orderId,bookedTables } = route.params ; // get table Id from floor plan 
+  const { tableId, orderId} = route.params ; // get table Id and order Id from floor plan 
   const [orderData, setOrderData] = useState({
     orderId: orderId ||null,         //string 
     orderDate: new Date().toISOString(), //YYYY-MM-DDTHH:mm:ss.sssZ  "2023-08-17T18:53:12",
@@ -19,11 +20,11 @@ const OrderScreen = ({route, navigation }) => {
     orderItems: [],  // order item array
   });
 
-  const windowWidth = Dimensions.get('window').width;
-  const isTablet = windowWidth >= 768;
-  const styles = useMemo(() => createStyles(isTablet), [isTablet]);
+  const windowWidth = Dimensions.get('window').width; // calculate width 
+  const isTablet = windowWidth >= 768; //  normal tablet size
+  const styles = useMemo(() => createStyles(isTablet), [isTablet]); 
 
-  const resetOrderData = () => {
+  const resetOrderData = () => { // cleare order after every submit
     setOrderData({
       orderDate: new Date().toISOString(),
       orderStatus: 'PENDING',
@@ -34,6 +35,11 @@ const OrderScreen = ({route, navigation }) => {
     setOrderNote('');
   };
 
+  useFocusEffect( 
+    React.useCallback(() => { 
+      fetchMenuItems();
+    }, []) 
+  );
 
   // fetch all  menu item 
   useEffect(() => {
@@ -45,9 +51,7 @@ const OrderScreen = ({route, navigation }) => {
       const response = await fetch('http://localhost:3000/api/menu-items');
       if (response.ok) {
         const data = await response.json();
-        console.log('Fetched Menu Items:', data);
         setMenuItems(data);
-        console.log(setMenuItems)
       } else {
         console.error('Error fetching menu items:', response.statusText);
         Alert.alert('Error fetching menu items from server:')
@@ -106,7 +110,6 @@ const OrderScreen = ({route, navigation }) => {
         menuItemStatus: item.menuItemStatus,
       })),
     };
-    console.log('Order data being sent:', orderTicket);
   
     try {
       const response = await fetch('http://localhost:3000/api/orders', {  // post order 
@@ -119,10 +122,7 @@ const OrderScreen = ({route, navigation }) => {
         const responseData = await response.json();
         Alert.alert('Success', 'Order successfully created');
         resetOrderData();
-       // navigation.navigate('Floor');
-
-        
-
+      
         setOrderData(prevData => ({
           ...prevData,
           orderId: responseData.orderId // Use parsed response to set `orderId`
@@ -131,7 +131,6 @@ const OrderScreen = ({route, navigation }) => {
        
         setOrderNoteModalVisible(false); //close the modeal 
 
-       // navigation.navigate('Floor');
       } else {
         // if  resonse not succesfully gave error
         const errorMessage = await response.text();
@@ -167,9 +166,6 @@ const OrderScreen = ({route, navigation }) => {
       }))
     };
     
-    console.log('Order data being sent:', JSON.stringify(orderTicket, null, 2));
-    
-      
 
     try {
       const response = await fetch(`http://localhost:3000/api/orders/${orderId}`, {  // post order 
@@ -179,9 +175,9 @@ const OrderScreen = ({route, navigation }) => {
       });
       if(response.ok){
         Alert.alert("Order updated succesfully")
-        orderNoteModalVisible(false);
+
+        setOrderNoteModalVisible(false); // close to modal
         resetOrderData();
-       // navigation.navigate('Floor');
        
       }else{
         const errorMessage=await response.text();
@@ -193,8 +189,6 @@ const OrderScreen = ({route, navigation }) => {
        console.log('error updating order ;',error)
        Alert.alert('Error', 'An error occurred while updating the order');
     }
-    setOrderNoteModalVisible(false); //close the modeal 
-
   };
 
 
@@ -205,10 +199,9 @@ const OrderScreen = ({route, navigation }) => {
       Alert.alert('Error', 'No items in the order');
       return;
     }
-    console.log(`Order Note before submission: ${orderNote}`);
     setOrderData(prevData => ({ ...prevData, notes: orderNote || '' }));
 
-    await new Promise(resolve => setTimeout(resolve, 0));
+    await new Promise(resolve => setTimeout(resolve, 0)); // tiny delay, allowing React to fully update orderData with the new notes 
 
   // Log the updated notes after updating
     console.log(`Updated Order Data Notes: ${orderNote}`);
@@ -236,8 +229,8 @@ const OrderScreen = ({route, navigation }) => {
   const handleConfirmOrder = () => {
     if(!selectedItem) return;
     
-    const existingItemIndex = orderData.orderItems.findIndex(item => item.menuItemId === selectedItem.id); // if item have in  order list 
-    const updatedOrderItems = [...orderData.orderItems];  // add order item 
+    const existingItemIndex = orderData.orderItems.findIndex(item => item.menuItemId === selectedItem.id); // if item have in  order list  otherwise turn -1
+    const updatedOrderItems = [...orderData.orderItems];  // add order item  in array 
 
     if (existingItemIndex !== -1) {  // push inside  [] if existing 
       updatedOrderItems[existingItemIndex] = {
@@ -355,12 +348,11 @@ const OrderScreen = ({route, navigation }) => {
               <View style={{marginRight:10}}>
                 <Button title={orderId ? "Update Order" : "Create Order"}  
                  onPress={() => {
-                  console.log("Order Note before submission:", orderNote);
-                  handleSubmitOrder();  // Trigger order submission or update
-                  setOrderNoteModalVisible(false); // Close modal after submission
+                  handleSubmitOrder();
+                  setOrderNoteModalVisible(false);
                   setTimeout(() => {
                     navigation.navigate('Floor', { refresh: true });
-                  }, 1); 
+                  }, 500); 
                 }}/>
             </View>
             <View style={{marginRight:10}}>
@@ -414,17 +406,22 @@ const OrderScreen = ({route, navigation }) => {
         <Text>Table ID:{tableId}</Text> 
         <ScrollView>
             {orderData?.orderItems?.map((orderItem, index) => (
-            <Pressable
-              key={index}
-              style={styles.orderItem}
-              onPress={() => Alert.alert('Status', `Status: ${orderItem.menuItemStatus || "ORDERED"}`)}
-              onLongPress={() => toggleItemStatus(index)}
-            >
+            <View key={index} style={styles.orderItem}>
+              
               <Text>{orderItem.menuItemName} x {orderItem.qty}</Text>
               {orderItem.notes ? <Text style={styles.noteText}>Note: {orderItem.notes}</Text> : null}
+              {/* Status Button */}
+              <Pressable 
+                style={[
+                  styles.statusButton, 
+                  orderItem.menuItemStatus === "SERVED" ? styles.servedButton : styles.orderedButton
+                ]}
+                onPress={() => toggleItemStatus(index)} // Toggle the status on press
+              >
               <Text style={styles.statusText}>
                 {orderItem.menuItemStatus === "SERVED" ? "Served" : "Ordered"}
               </Text>
+              </Pressable>
 
               <View style={styles.buttons}>
                 <Pressable style={styles.button} onPress={() => incrementOrderQty(orderItem.menuItemId)}>
@@ -437,7 +434,7 @@ const OrderScreen = ({route, navigation }) => {
                   <Text style={styles.deleteButtonText}>Delete</Text>
                 </Pressable>
               </View>
-            </Pressable>
+            </View>
           ))}
         </ScrollView>
 
@@ -491,7 +488,7 @@ const createStyles = (isTablet) => StyleSheet.create({
   
   buttons: { flexDirection: 'row', alignItems: 'center' },
   
-  button: { marginHorizontal: 5, padding: 5, backgroundColor: '#ddd', borderRadius: 5 },
+  button: { marginHorizontal: 5,  paddingHorizontal: 20, padding: 5, backgroundColor: '#ddd', borderRadius: 5 },
   
   buttonText: { fontSize: 18 },
   
@@ -526,6 +523,30 @@ const createStyles = (isTablet) => StyleSheet.create({
   statusButton: { padding: 8, marginHorizontal: 5, backgroundColor: '#ddd', borderRadius: 5 },
 
   statusText: {fontSize: 14,color: '#008000', fontWeight: 'bold',marginTop: 4,},
+  statusButton: {
+    paddingVertical: 5,
+    paddingHorizontal: 10,
+    borderRadius: 5,
+    marginTop: 5,
+    alignSelf: 'flex-start',
+  },
+  servedButton: {
+    backgroundColor: 'yellow', 
+  },
+  servedButton: {
+    backgroundColor: '#FFD700', 
+  },
+  orderedButton: {
+    backgroundColor: '#ddd', 
+  },
+  statusButtonText: {
+    color: '#FFFFFF',
+    fontWeight: 'bold',
+    textAlign: 'center',
+  },
+  
+  
+  
 });
  
 export default OrderScreen;
