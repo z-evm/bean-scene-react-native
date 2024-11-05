@@ -51,19 +51,18 @@ export function Floor({ route, navigation }) {
   
   return (
     <SafeAreaView style={styles.container}>
-        <ScrollView> {/*loop for each of table */}
+        <ScrollView>{/*loop for each of table */}
             {sortedTables.map((tableNumber) => (
                 <View key={tableNumber} style={styles.fixToText}>
                     <Pressable 
                         style={[isTableBooked(tableNumber) ? styles.reserveButtonRed : styles.reserveButton]}
-                        onPress={() => {
+                        onPress={() =>{
                             const orderForTable = orders.find(order => order.tableNumber === tableNumber && order.orderStatus === "PENDING");
                             navigation.navigate('Order', {
                                 tableId:tableNumber,
                                 orderId: orderForTable ? orderForTable.orderId : null, 
                             });
-                        }}
-                    >
+                        }}>
                         <Text style={styles.text}>
                             {isTableBooked(tableNumber) ? `${tableNumber} - Booked` : tableNumber}
                         </Text>
