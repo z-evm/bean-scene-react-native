@@ -1,7 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import {StyleSheet,View,SafeAreaView,Text,Pressable,ScrollView,Alert} from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
-
+/**
+ * This function is for displaying the floor page
+ * @param {*} navigation // This paramater is used to exchange table number and order number with the order page
+ * @returns 
+ */
 export function Floor({ route, navigation }) {
 
   const [bookedTables, setBookedTables] = useState([]); // stora  booked table id
@@ -21,10 +25,12 @@ export function Floor({ route, navigation }) {
     setBookedTables(allTables.filter(isTableBooked));
     
   }, [orders]); // when ever order changes call again
-
+/**
+ * This function fetches order data from the database
+ */
   const fetchOrderData = async () => {
     try {
-      const response = await fetch(`http://localhost:3000/api/orders`); // Ensure correct endpoint
+      const response = await fetch(`http://192.168.0.248:3000/api/orders`); // Ensure correct endpoint
       if (response.ok) {
         const data = await response.json();
         setOrders(data); 
@@ -38,7 +44,11 @@ export function Floor({ route, navigation }) {
     }
   };
 
-
+/**
+ * This function shows all tables with a status of its booking
+ * @param {int} tableNumber 
+ * @returns 
+ */
   
   const isTableBooked = (tableNumber) => {
     return orders.filter(order => order.tableNumber === tableNumber && order.orderStatus === "PENDING").length > 0;
