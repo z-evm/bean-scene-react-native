@@ -2,6 +2,12 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { View, Text, ScrollView, StyleSheet, Dimensions, Modal, TextInput, Button, SafeAreaView, Alert, Pressable } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 
+/**
+ * // This function is for displaying the Order page
+ * @param {*} navigation // This paramater is used to exchange table number and order number with the floor page
+ * @param {*} route // This paramater is used to retrieve the parameters information such as the table id from the floor page
+ * 
+ */
 const OrderScreen = ({route, navigation }) => {
   const [searchTerm, setSearchTerm] = useState(''); // Stores the text for filtering menu items by name.
   const [menuItems, setMenuItems] = useState([]); // stora menu item 
@@ -23,8 +29,10 @@ const OrderScreen = ({route, navigation }) => {
   const windowWidth = Dimensions.get('window').width; // calculate width 
   const isTablet = windowWidth >= 768; //  normal tablet size
   const styles = useMemo(() => createStyles(isTablet), [isTablet]); 
-
-  const resetOrderData = () => { // cleare order after every submit
+/**
+ * This function resets all fields for the Order form after an order is submitted
+ */
+  const resetOrderData = () => { // clears order after every submit
     setOrderData({
       orderDate: new Date().toISOString(),
       orderStatus: 'PENDING',
@@ -45,7 +53,9 @@ const OrderScreen = ({route, navigation }) => {
   useEffect(() => {
     fetchMenuItems(); // Fetch items on initial load
   }, []);
-
+/**
+ * This function retrieves all menu items from the database and displays these in the Order page
+ */
   const fetchMenuItems = async () => {
     try {
       const response = await fetch('http://localhost:3000/api/menu-items');
@@ -74,7 +84,10 @@ const OrderScreen = ({route, navigation }) => {
       resetOrderData();
     }
   },[tableId, orderId]);
-
+/**
+ * This function retrieves the order details for an order based on the order id
+ * @param {int} orderId // this is the order id
+ */
   const fetchOrderData = async (orderId) => {
     try{
       const response=await fetch(`http://localhost:3000/api/orders/${orderId}`);
@@ -94,7 +107,9 @@ const OrderScreen = ({route, navigation }) => {
 
   
 
-
+/**
+ * This function submits the order and its details and displays the message saying that the order is successfully submitted
+ */
   const pushOrderData = async () => { // define order data structure 
     const orderTicket = {
       orderDate: orderData.orderDate,
@@ -143,7 +158,11 @@ const OrderScreen = ({route, navigation }) => {
     
   };
 
-
+/**
+ * This function updates the order's details based on the order id
+ * @param {int} orderId // this is the order id
+ * @returns {*}
+ */
   const UpdateOrderData = async (orderId) =>{ 
     if(!orderId){
       console.error("Order Id missing");
@@ -192,7 +211,10 @@ const OrderScreen = ({route, navigation }) => {
   };
 
 
- 
+ /**
+  * This function updates an order's data based on the order id or creates a new order if the order id doesn't exist
+  * 
+  */
 
   const handleSubmitOrder = async () => {
     if (orderData?.orderItems?.length === 0) {
@@ -217,7 +239,9 @@ const OrderScreen = ({route, navigation }) => {
   };
   
 
-
+/**
+ * This function handles the way users selects a menu item and add notes for an menu item in the order page
+ */
 
 
   const handleSelectItem = (item) => { // when press menu item 
@@ -225,7 +249,9 @@ const OrderScreen = ({route, navigation }) => {
     setMenuItemNote(''); // create note 
     setModalVisible(true); // modal open
   };
-
+/**
+ * This function handles the orders that are submitted in the order page
+ */
   const handleConfirmOrder = () => {
     if(!selectedItem) return;
     
@@ -256,7 +282,10 @@ const OrderScreen = ({route, navigation }) => {
     }
     }
 
-    
+  /**
+   * This function increments the quantity of a menu item in an order by 1
+   * @param {int} menuItemId // this is the id for a menu item
+   */
 
   const incrementOrderQty = (menuItemId) => {
     setOrderData(prevData => ({
@@ -266,7 +295,10 @@ const OrderScreen = ({route, navigation }) => {
       ),
     }));
   };
-
+/**
+ * This function decrements the quantity of a menu item in an order by 1
+ * @param {int} menuItemId // this is the id for a menu item
+ */
   const decrementOrderQty = (menuItemId) => {
     setOrderData(prevData => ({
       ...prevData,
@@ -275,7 +307,10 @@ const OrderScreen = ({route, navigation }) => {
         .filter(item => item.qty > 0), // if item is zero delete
     }));
   };
-
+/**
+ * This function is used to delete an order
+ * @param {int} index // used to delete an order
+ */
   const handleDeleteOrderItem = (index) => { // delete order with  button
     setOrderData(prevData => ({
       ...prevData,
@@ -289,7 +324,9 @@ const OrderScreen = ({route, navigation }) => {
     PAID: 'CANCELLED',
     CANCEL: 'PENDING',
   }
-
+/**
+ * This function is used to change the status of an order
+ */
   const toggleOrderStatus = () => {
     setOrderData(prevData => {
       const newStatus = statuMap[prevData.orderStatus] || 'PENDING'; // Fallback to 'PENDING' if no match
@@ -299,7 +336,10 @@ const OrderScreen = ({route, navigation }) => {
       };
     });
   };
-
+/**
+ * This function is used to change the status of a menu item to ORDERED or SERVED 
+ * @param {*} index // used when changing status of a menu item to ORDERED or SERVED
+ */
   const toggleItemStatus = (index) => {
     setOrderData(prevData => ({
       ...prevData,
