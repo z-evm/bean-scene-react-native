@@ -30,7 +30,7 @@ export function Floor({ route, navigation }) {
  */
   const fetchOrderData = async () => {
     try {
-      const response = await fetch(`http://192.168.0.248:3000/api/orders`); // Ensure correct endpoint
+      const response = await fetch(`http://localhost:3000/api/orders`); // Ensure correct endpoint
       if (response.ok) {
         const data = await response.json();
         setOrders(data); 
