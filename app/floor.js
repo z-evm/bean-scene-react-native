@@ -4,7 +4,7 @@ import { useFocusEffect } from '@react-navigation/native';
 /**
  * This function is for displaying the floor page
  * @param {*} navigation // This paramater is used to exchange table number and order number with the order page
- * @returns 
+ * 
  */
 export function Floor({ route, navigation }) {
 
@@ -47,7 +47,7 @@ export function Floor({ route, navigation }) {
 /**
  * This function shows all tables with a status of its booking
  * @param {int} tableNumber 
- * @returns 
+ * @returns {*}
  */
   
   const isTableBooked = (tableNumber) => {
