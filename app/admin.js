@@ -1,8 +1,8 @@
 import React, { useState, useMemo, useEffect } from 'react';
-import {View,Text,TextInput,ScrollView,StyleSheet,FlatList,Dimensions, Pressable, Alert, Button,} from 'react-native';
+import {View,Text,TextInput,ScrollView,StyleSheet,FlatList,Dimensions, Pressable, Alert, Button, Linking} from 'react-native';
 import * as Print from 'expo-print';
-import { shareAsync } from 'expo-sharing';
-
+import * as Sharing from 'expo-sharing';
+import fileSystem from 'expo-file-system';
 
 
 const AdminScreen = () => {
@@ -133,22 +133,8 @@ const AdminScreen = () => {
     setIsEditing(false);  // editting false when we choose item will be true .
     setCurrentId(null);
   };
-
-
- 
-
-  const createPdf = async () => {
-    const html = `
-      <h1>Menu Items</h1>
-      ${menuItems.map(item => `<p>${item.name} - $${item.price}</p>`).join('')}
-    `;
-    // On iOS/android prints the given html. On web prints the HTML from the current page.
-    const { uri } = await Print.printToFileAsync({ html });
-    console.log('File has been saved to:', uri);
-    await shareAsync(uri, { UTI: '.pdf', mimeType: 'application/pdf' });
-  };
   
-
+  const pdfUrl ='http://192.168.0.249:8081/assets/bean-scene-menu.pdf';
   return (
     <View style={styles.container}> 
       <View style={styles.formSection}> 
@@ -190,7 +176,7 @@ const AdminScreen = () => {
           extraData={menuItems} 
         />
         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }} >
-          <Button  title='Download Menu Pdf' onPress={createPdf}/>
+          <Button  title='Download Menu Pdf' onPress={() => Linking.openURL(pdfUrl)}/>
         </View>
       </View>
     </View>
