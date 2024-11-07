@@ -1,8 +1,5 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import {View,Text,TextInput,ScrollView,StyleSheet,FlatList,Dimensions, Pressable, Alert, Button, Linking} from 'react-native';
-import * as Print from 'expo-print';
-import * as Sharing from 'expo-sharing';
-import fileSystem from 'expo-file-system';
 
 
 const AdminScreen = () => {
