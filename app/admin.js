@@ -1,7 +1,10 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import {View,Text,TextInput,ScrollView,StyleSheet,FlatList,Dimensions, Pressable, Alert, Button, Linking} from 'react-native';
 
-
+/**
+ * This shows the Admin screen for the app
+ * 
+ */
 const AdminScreen = () => {
   const [menuItems, setMenuItems] = useState([]); // Store menu items fetched from backend
   const [form, setForm] = useState({
@@ -29,6 +32,10 @@ const AdminScreen = () => {
     fetchMenuItems(); // Fetch items on initial load
   }, []);
 
+/**
+ * This function fetches the menu items from the database and display these in the Admin page
+ */
+
   const fetchMenuItems = async () => {
     try {
       const response = await fetch('http://localhost:3000/api/menu-items');
@@ -45,6 +52,11 @@ const AdminScreen = () => {
     }
   };
 
+/**
+ * This function handles the selection of the menu item
+ * @param {*} item // this parameter is for the menu item
+ */
+
   const handleSelectItem = (item) => { // select item from list 
     setForm({
       ...item, 
@@ -54,6 +66,11 @@ const AdminScreen = () => {
     setCurrentId(item._id);
     setIsEditing(true);
   };
+
+/**
+ * This function deletes the menu item from the menu item list based on id
+ * @param {int} _id // id of the menu item
+ */
 
   const handleDelete = async (_id) => {
     try {
@@ -71,6 +88,10 @@ const AdminScreen = () => {
       console.error('Error deleting menu item:', error);
     }
   };
+
+/**
+ * This function handles the submission of the menu item after details update or adding new menu item
+ */
 
   const handleSubmit = async () => {
     const newItem = {
@@ -124,6 +145,11 @@ const AdminScreen = () => {
       Alert.alert('Network',"Error saving the menu item ")
     }
   };
+
+/**
+ * This function resets the Add Menu item form
+ */
+
 
   const resetForm = () => {
     setForm({ name: '', description: '', price: '', category: '', ingredients: '', dietary: '' });
