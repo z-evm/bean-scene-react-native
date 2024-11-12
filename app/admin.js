@@ -1,6 +1,7 @@
 import React, { useState, useMemo, useEffect } from 'react';
-import {View,Text,TextInput,ScrollView,StyleSheet,FlatList,Dimensions, Pressable, Alert, Button, Linking} from 'react-native';
-
+import {View,Text,TextInput,ScrollView,StyleSheet,FlatList,Dimensions, Pressable, Alert, Button, Linking, Platform} from 'react-native';
+import * as Print from 'expo-print';
+import { shareAsync } from 'expo-sharing';
 /**
  * This shows the Admin screen for the app
  * 
@@ -38,7 +39,7 @@ const AdminScreen = () => {
 
   const fetchMenuItems = async () => {
     try {
-      const response = await fetch('http://localhost:3000/api/menu-items');
+      const response = await fetch('http://192.168.0.249:3000/api/menu-items');
       if (response.ok) {
         const data = await response.json();
         setMenuItems(data);
@@ -74,7 +75,7 @@ const AdminScreen = () => {
 
   const handleDelete = async (_id) => {
     try {
-      const response = await fetch(`http://localhost:3000/api/menu-items/${_id}`, { 
+      const response = await fetch(`http://192.168.0.249:3000/api/menu-items/${_id}`, { 
               method: 'DELETE' 
              }); // search with Id
       if (response.ok) {
@@ -104,7 +105,7 @@ const AdminScreen = () => {
       let response;
       if (isEditing && currentId) { // if editing true and current id have update menu item 
         // Update existing item
-        response = await fetch(`http://localhost:3000/api/menu-items/${currentId}`, {
+        response = await fetch(`http://192.168.0.249:3000/api/menu-items/${currentId}`, {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(newItem),
@@ -123,7 +124,7 @@ const AdminScreen = () => {
       }
       // Add new item
        else {
-        response = await fetch('http://localhost:3000/api/menu-items', {
+        response = await fetch('http://192.168.0.249:3000/api/menu-items', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(newItem),
@@ -155,6 +156,55 @@ const AdminScreen = () => {
     setForm({ name: '', description: '', price: '', category: '', ingredients: '', dietary: '' });
     setIsEditing(false);  // editting false when we choose item will be true .
     setCurrentId(null);
+  };
+
+  const createPdf = async () => {
+    const html = `
+      <html>
+      <head>
+      <style>
+      body{
+      font-family:Arial;
+      }
+      .logo {
+        width:600px;
+        height:auto;
+        display:block;
+        margin:0 auto;
+      }
+      h1 { text-align:center; }
+      table {
+        width:100%;
+      }
+      table thead tr td, table tbody tr td{
+        text-align:center;
+      }
+      table, th, td {
+        border: 1px solid black;
+      }
+      table thead td {
+        font-weight:bold;
+      }
+      </style>
+      </head>
+      <body>
+      <img class="logo" src="http://192.168.0.249:8081/assets/bean-scene-logo.png" />
+      <h1>Menu</h1>
+      <table>
+      <thead>
+      <tr><td>Menu Item</td><td>Price ($)</td></tr>
+      </thead>
+      <tbody>
+      ${menuItems.map(item => ` <tr><td>${item.name}</td><td>${item.price}</td></tr>`).join('')}
+      </tbody>
+      </table>
+      </body>
+      </html>
+    `;
+    // On iOS/android prints the given html. On web prints the HTML from the current page.
+    const { uri } = await Print.printToFileAsync({ html });
+    console.log('File has been saved to:', uri);
+    await shareAsync(uri, { UTI: '.pdf', mimeType: 'application/pdf' });
   };
   
   const pdfUrl ='http://192.168.0.249:8081/assets/bean-scene-menu.pdf';
@@ -199,7 +249,7 @@ const AdminScreen = () => {
           extraData={menuItems} 
         />
         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }} >
-          <Button  title='Download Menu Pdf' onPress={() => Linking.openURL(pdfUrl)}/>
+        <Button  title='Download Menu Pdf' onPress={Platform.OS == "web" ? () => Linking.openURL(pdfUrl) : createPdf}/>
         </View>
       </View>
     </View>
