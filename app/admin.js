@@ -248,7 +248,7 @@ const AdminScreen = () => {
           )}
           extraData={menuItems} 
         />
-        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }} >
+        <View style={{ justifyContent: 'center', alignItems: 'center' }} >
         <Button  title='Download Menu Pdf' onPress={Platform.OS == "web" ? () => Linking.openURL(pdfUrl) : createPdf}/>
         </View>
       </View>
