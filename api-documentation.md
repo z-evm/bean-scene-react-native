@@ -1,6 +1,6 @@
-**Show Orders**
+**Show Menu Items**
 ----
-  Returns json data about all orders.
+  Returns json data about all Menu Items.
 
 * **URL**
 
@@ -167,7 +167,6 @@
       Alert.alert('Network','Error fetching menu items:', error)
     }
   };
-```
 
 **Show Order**
 ----
@@ -291,15 +290,14 @@
       Alert.alert('Error', 'an error accored while fetching the order data');
     }
   };
-```
 
-  **Create Order**
+**Create Order**
 ----
   Creates order 
 
 * **URL**
 
-  /orders/
+  /orders
 
 * **Method:**
 
@@ -376,7 +374,7 @@
     }
     
   };
-```
+
 
 **Update Order**
 ----
@@ -464,4 +462,3 @@
        Alert.alert('Error', 'An error occurred while updating the order');
     }
   };
-  ``` 
