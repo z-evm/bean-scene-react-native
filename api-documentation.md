@@ -375,6 +375,126 @@
     
   };
 
+**Add New Menu Item**
+----
+  Adding a new menu item to the app
+
+* **URL**
+
+  /menu-items
+
+* **Method:**
+
+  `POST`
+  
+*  **URL Params**
+
+   **Required:**
+ 
+   NONE
+
+* **Data Params**
+
+  None
+
+* **Success Response:**
+
+  * **Code:** 200 <br />
+    **Content:** '{ "success": "Menu Item successfully added"}'
+ 
+* **Error Response:**
+
+  * **Code:** 400 Bad Request <br />
+    **Content:** '{ "error": "Failed  to add menu item"}'
+
+* **Sample Call:**
+
+  ```javascript
+    response = await fetch('http://192.168.0.249:3000/api/menu-items', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(newItem),
+        });
+  
+        if (response.ok) {
+          const savedItem = await response.json();
+          setMenuItems((prevItems) => [...prevItems, savedItem]);
+        }
+        else{
+          console.error('Failed  to add menu item:', response.statusText);
+          Alert.alert("Add Error","Failed  to add menu item ")
+        }
+
+
+**Update Menu Item**
+----
+  Update details of a menu item
+
+* **URL**
+
+  /menu-items/:id
+
+* **Method:**
+
+  `PUT`
+  
+*  **URL Params**
+
+   **Required:**
+ 
+ `id=[integer]`
+
+* **Data Params**
+
+  None
+
+* **Success Response:**
+
+  * **Code:** 200 <br />
+    **Content:** '{
+    "_id": "6733e3a6b9ec9a3b4903696e",
+    "name": "Steak with Garlic Butter",
+    "description": "...",
+    "price": 29.9,
+    "category": "DINNER",
+    "ingredients": [
+        "beef steak",
+        "butter",
+        "herbs"
+    ],
+    "dietary": [
+        "gluten-free"
+    ],
+    "available": true,
+    "__v": 0,
+    "createdAt": "2024-11-12T23:24:22.093Z",
+    "updatedAt": "2024-11-14T03:28:54.327Z"
+}'
+ 
+* **Error Response:**
+
+  * **Code:** 400 Bad Request <br />
+    **Content:** '{ "error": "Failed to update menu item"}'
+
+* **Sample Call:**
+
+  ```javascript
+    response = await fetch(`http://192.168.0.249:3000/api/menu-items/${currentId}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(newItem),
+        });
+  
+        if (response.ok) {
+          const updatedItem = await response.json();
+          setMenuItems((prevItems) =>
+            prevItems.map((item) => (item._id === currentId ? updatedItem : item))
+          );
+        }
+        else{
+          console.error('Failed  to update menu item:', response.statusText);
+          Alert.alert("Update Error","Failed  to update menu item ")
+        }
 
 **Update Order**
 ----
@@ -462,3 +582,5 @@
        Alert.alert('Error', 'An error occurred while updating the order');
     }
   };
+
+  
