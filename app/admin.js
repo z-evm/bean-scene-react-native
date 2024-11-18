@@ -8,6 +8,7 @@ import { shareAsync } from 'expo-sharing';
  */
 const AdminScreen = () => {
   const [menuItems, setMenuItems] = useState([]); // Store menu items fetched from backend
+  const [errors, setErrors] = useState({});
   const [form, setForm] = useState({
     name: '',
     description: '',
@@ -39,7 +40,7 @@ const AdminScreen = () => {
 
   const fetchMenuItems = async () => {
     try {
-      const response = await fetch('http://192.168.0.249:3000/api/menu-items');
+      const response = await fetch('http://localhost:3000/api/menu-items');
       if (response.ok) {
         const data = await response.json();
         setMenuItems(data);
@@ -75,7 +76,7 @@ const AdminScreen = () => {
 
   const handleDelete = async (_id) => {
     try {
-      const response = await fetch(`http://192.168.0.249:3000/api/menu-items/${_id}`, { 
+      const response = await fetch(`http://localhost:3000/api/menu-items/${_id}`, { 
               method: 'DELETE' 
              }); // search with Id
       if (response.ok) {
@@ -94,18 +95,72 @@ const AdminScreen = () => {
  * This function handles the submission of the menu item after details update or adding new menu item
  */
 
-  const handleSubmit = async () => {
-    const newItem = {
-      ...form,
-      ingredients: form.ingredients.split(',').map((ingredient) => ingredient.trim()), // stoare as array
-      dietary: form.dietary.split(',').map((dietary) => dietary.trim()), // stoare as array
+  
+    const handleInputChange = (field, value) => {
+      setForm({ ...form, [field]: value });
+    
+      // Clear the error for the specific field being modified
+      setErrors((prevErrors) => {
+        const updatedErrors = { ...prevErrors };
+        delete updatedErrors[field]; // Remove the error for the current field
+        return updatedErrors;
+      });
     };
+    
+
+    const handleSubmit = async () => {
+      const newErrors = {};
+    
+      if (!form.name.trim()) {
+        newErrors.name = 'Name is required.';
+      }
+    
+      if (!form.description.trim()) {
+        newErrors.description = 'Description is required.';
+      }
+    
+      if (!form.price || isNaN(form.price) || form.price <= 0 || !/^\d+(\.\d{1,2})?$/.test(form.price)) { // regular expressing 
+        newErrors.price = 'Price must be a positive number with up to two decimal places ';
+      }
+      
+    
+      if (!allowedCategories.includes(form.category.toUpperCase())) {
+        newErrors.category = 'Invalid category. Allowed: BREAKFAST, LUNCH, DINNER, BEVERAGE, DESSERT.';
+      }
+    
+      const ingredientsArray = form.ingredients
+        .split(',')
+        .map((ingredient) => ingredient.trim())
+        .filter((ingredient) => ingredient);
+      if (ingredientsArray.length === 0) {
+        newErrors.ingredients = 'Ingredients cannot be empty.';
+      }
+    
+      const dietaryArray = form.dietary
+        .split(',')
+        .map((dietary) => dietary.trim())
+        .filter((dietary) => dietary);
+      if (dietaryArray.length === 0) {
+        newErrors.dietary = 'Dietary information cannot be empty.';
+      }
+    
+      if (Object.keys(newErrors).length > 0) {
+        setErrors(newErrors); // Set errors in state
+        return; // Stop further execution
+      }
+    
+      // No errors: Proceed to submit
+      const newItem = {
+        ...form,
+        ingredients: ingredientsArray,
+        dietary: dietaryArray,
+      };
   
     try {
       let response;
       if (isEditing && currentId) { // if editing true and current id have update menu item 
         // Update existing item
-        response = await fetch(`http://192.168.0.249:3000/api/menu-items/${currentId}`, {
+        response = await fetch(`http://localhost:3000/api/menu-items/${currentId}`, {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(newItem),
@@ -124,7 +179,7 @@ const AdminScreen = () => {
       }
       // Add new item
        else {
-        response = await fetch('http://192.168.0.249:3000/api/menu-items', {
+        response = await fetch('http://localhost:3000/api/menu-items', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(newItem),
@@ -150,6 +205,21 @@ const AdminScreen = () => {
 /**
  * This function resets the Add Menu item form
  */
+
+const allowedCategories = ['BREAKFAST', 'LUNCH', 'DINNER', 'BEVERAGE', 'DESSERT'];
+
+const handleCategoryChange = (text) => {
+  // Update the category in form
+  setForm({ ...form, category: text });
+
+
+  // Validate input and set error message if invalid
+  if (!allowedCategories.includes(text.toUpperCase())) {
+    setError('Allowed categories: BREAKFAST, LUNCH, DINNER, BEVERAGE, DESSERT');
+  } else {
+    setError(''); // Clear error if valid
+  }
+};
 
 
   const resetForm = () => {
@@ -212,18 +282,55 @@ const AdminScreen = () => {
     <View style={styles.container}> 
       <View style={styles.formSection}> 
         <Text style={styles.header}>Menu Item Details</Text>
-        <ScrollView> 
-          <TextInput style={styles.input} placeholder="Name" value={form.name} onChangeText={(text) => setForm({ ...form, name: text })} />
-          <TextInput style={styles.input} placeholder="Description" value={form.description} onChangeText={(text) => setForm({ ...form, description: text })} />
+        <ScrollView>
+          <TextInput
+            style={styles.input}
+            placeholder="Name"
+            value={form.name}
+            onChangeText={(text) => handleInputChange('name', text)}
+          />
+          {errors.name && <Text style={styles.errorText}>{errors.name}</Text>}
+
+          <TextInput
+            style={styles.input}
+            placeholder="Description"
+            value={form.description}
+            onChangeText={(text) => handleInputChange('description', text)}
+          />
+          {errors.description && <Text style={styles.errorText}>{errors.description}</Text>}
+
           <TextInput
             style={styles.input}
             placeholder="Price"
-            value={form.price ? form.price.toString() : ''} 
-            keyboardType="numeric"                         
-            onChangeText={(number) => setForm({ ...form, price: Number(number) })}/>       
-          <TextInput style={styles.input} placeholder="Category" value={form.category} onChangeText={(text) => setForm({ ...form, category: text })} />
-          <TextInput style={styles.input} placeholder="Ingredients (comma separated)" value={form.ingredients} onChangeText={(text) => setForm({ ...form, ingredients: text })} />
-          <TextInput style={styles.input} placeholder="Dietary (comma separated)" value={form.dietary} onChangeText={(text) => setForm({ ...form, dietary: text })} />
+            value={form.price ? form.price.toString() : ''}
+            keyboardType="numeric"
+            onChangeText={(text) => handleInputChange('price', text)}
+          />
+          {errors.price && <Text style={styles.errorText}>{errors.price}</Text>}
+
+          <TextInput
+            style={styles.input}
+            placeholder="Category"
+            value={form.category}
+            onChangeText={(text) => handleInputChange('category', text)} // Corrected key: 'category'
+          />
+          {errors.category && <Text style={styles.errorText}>{errors.category}</Text>}
+
+          <TextInput
+            style={styles.input}
+            placeholder="Ingredients (comma separated)"
+            value={form.ingredients}
+            onChangeText={(text) => handleInputChange('ingredients', text)} // Corrected key: 'ingredients'
+          />
+          {errors.ingredients && <Text style={styles.errorText}>{errors.ingredients}</Text>}
+
+          <TextInput
+            style={styles.input}
+            placeholder="Dietary (comma separated)"
+            value={form.dietary}
+            onChangeText={(text) => handleInputChange('dietary', text)} // Corrected key: 'dietary'
+          />
+          {errors.dietary && <Text style={styles.errorText}>{errors.dietary}</Text>}
           <Pressable style={styles.button} onPress={handleSubmit}>
             <Text style={styles.buttonText}>{isEditing ? 'Update' : 'Add'}</Text>
           </Pressable>
@@ -340,6 +447,12 @@ const createStyles = (isTablet) =>
       color: '#fff',
       fontWeight: 'bold',
     },
+    errorText: {
+      color: 'red',
+      fontSize: 12,
+      marginBottom: 10,
+    },
+    
   });
 
 export default AdminScreen;
