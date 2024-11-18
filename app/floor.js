@@ -55,8 +55,8 @@ export function Floor({ route, navigation }) {
   };
 
   const sortedTables = [
-    ...allTables.filter(isTableBooked), 
-    ...allTables.filter(table => !isTableBooked(table)) 
+    ...allTables.filter(isTableBooked), // first get booked table 
+    ...allTables.filter(table => !isTableBooked(table))  // second available table
   ];
   
   return (

@@ -506,17 +506,20 @@ const OrderScreen = ({route, navigation }) => {
 };
 
 const createStyles = (isTablet) => StyleSheet.create({
-  container: { flex: 1, flexDirection: isTablet ? 'row' : 'column', padding: 10, justifyContent: 'center' },
+  container: { flex: 1, flexDirection: isTablet ? 'row' : 'column',padding: isTablet ? 10 : 5, justifyContent: 'center' },
   
   modalContainer: { flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: 'rgba(0, 0, 0, 0.5)' },
   
-  modalView: { width: '80%', backgroundColor: 'white', borderRadius: 10, padding: 20, alignItems: 'center' },
+  modalView: { width: isTablet ? '80%' : '90%', backgroundColor: 'white', borderRadius: 10, padding: isTablet ? 20 : 15, alignItems: 'center' },
+
   
-  modalText: { marginBottom: 15, textAlign: 'center', fontSize: 18 },
+  modalText: { marginBottom: 15, textAlign: 'center', fontSize: isTablet ? 18 : 16 },
+
   
   noteInput: { height: 40, borderColor: '#ccc', borderWidth: 1, paddingHorizontal: 10, backgroundColor: '#fff', marginBottom: 20, width: '100%' },
   
-  menuSection: { width: isTablet ? '50%' : '100%', height: isTablet ? '100%' : '50%', padding: 10, backgroundColor: '#fff', borderRadius: 10, borderWidth: 1, borderColor: '#000', marginBottom: 20 },
+  menuSection: { width: isTablet ? '50%' : '100%', height: isTablet ? '100%' : '50%', padding: isTablet ? 10 : 8, backgroundColor: '#fff', borderRadius: 10, borderWidth: 1, borderColor: '#000', marginBottom: 20 },
+
  
   menuList: { flex: 1 },
  
@@ -528,7 +531,8 @@ const createStyles = (isTablet) => StyleSheet.create({
   
   buttons: { flexDirection: 'row', alignItems: 'center' },
   
-  button: { marginHorizontal: 5,  paddingHorizontal: 20, padding: 5, backgroundColor: '#ddd', borderRadius: 5 },
+  button: { marginHorizontal: 5, paddingHorizontal: isTablet ? 20 : 15, padding: isTablet ? 5 : 4, backgroundColor: '#ddd', borderRadius: 5 },
+
   
   buttonText: { fontSize: 18 },
   
@@ -558,32 +562,22 @@ const createStyles = (isTablet) => StyleSheet.create({
   
   manageButtonText: { color: '#fff', fontWeight: 'bold' },
 
-  searchBox: {width:'50%' ,alignSelf: 'center',marginBottom: 10,marginTop:10,padding: 10,borderRadius: 5,borderColor: '#ccc',borderWidth: 1,},
+  searchBox: { width: isTablet ? '50%' : '80%', alignSelf: 'center', marginBottom: 10, marginTop: 10, padding: isTablet ? 10 : 8, borderRadius: 5, borderColor: '#ccc', borderWidth: 1 },
+
 
   statusButton: { padding: 8, marginHorizontal: 5, backgroundColor: '#ddd', borderRadius: 5 },
 
   statusText: {fontSize: 14,color: '#008000', fontWeight: 'bold',marginTop: 4,},
-  statusButton: {
-    paddingVertical: 5,
-    paddingHorizontal: 10,
-    borderRadius: 5,
-    marginTop: 5,
-    alignSelf: 'flex-start',
-  },
-  servedButton: {
-    backgroundColor: 'yellow', 
-  },
-  servedButton: {
-    backgroundColor: '#FFD700', 
-  },
-  orderedButton: {
-    backgroundColor: '#ddd', 
-  },
-  statusButtonText: {
-    color: '#FFFFFF',
-    fontWeight: 'bold',
-    textAlign: 'center',
-  },
+  
+  statusButton: {paddingVertical: 5,paddingHorizontal: 10,borderRadius: 5,marginTop: 5,alignSelf: 'flex-start',},
+  
+  servedButton: {backgroundColor: 'yellow', },
+  
+  servedButton: {backgroundColor: '#FFD700', },
+  
+  orderedButton: {backgroundColor: '#ddd', },
+  
+  statusButtonText: {color: '#FFFFFF',fontWeight: 'bold',textAlign: 'center',},
   
   
   
