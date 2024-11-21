@@ -8,6 +8,8 @@ import FloorScreen from './app/floor';
 import OrderScreen from './app/order';
 import ReservationScreen from './app/reservation';
 import AdminScreen from './app/admin';
+import LoginScreen from './app/login';
+import LogoutScreen from './app/logout';
 
 const Tab = createBottomTabNavigator();
 
@@ -15,6 +17,15 @@ export default function App() {
   return (
     <NavigationContainer>
       <Tab.Navigator screenOptions={{ headerTitle: '' }}>
+        <Tab.Screen name="Login" component={LoginScreen} 
+          options={{
+              tabBarButton: () => null,
+              tabBarStyle: { display: 'none' },
+              tabBarVisible:false, //hide tab bar on this screen
+              headerShown: false
+          }}
+          initialParams={{ tableId: undefined }}
+        />
         <Tab.Screen name="Floor" component={FloorScreen} 
           options={{
               tabBarIcon: () => (
@@ -51,6 +62,15 @@ export default function App() {
                   <Icon name='table' size={20} />
               ),
               headerTitle:"Admin Screen"
+          }}
+          initialParams={{ tableId: undefined }} 
+        />
+        <Tab.Screen name="Logout" component={LogoutScreen}
+          options={{
+              tabBarIcon: () => (
+                  <Icon name='sign-out' size={20} />
+              ),
+              headerShown: false
           }}
           initialParams={{ tableId: undefined }} 
         />
