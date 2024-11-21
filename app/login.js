@@ -3,6 +3,7 @@ import {
 SafeAreaView,
 ScrollView,
 StatusBar,
+Alert,
 StyleSheet,
 Text,
 useColorScheme,
@@ -41,9 +42,13 @@ const onPressLogin = async () => {
     password: state.password,
   };
   const newErrors = {};
+  var validRegex = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
 try {
   if (!state.username.trim()) {
     newErrors.username = 'Email is required.';
+  }
+  if (!state.username.match(validRegex)) {
+    newErrors.username = 'Email is not in a valid format.';
   }
   if (!state.password.trim()) {
     newErrors.password = 'Password is required.';
@@ -52,15 +57,27 @@ try {
     setErrors(newErrors); // Set errors in state
     return; // Stop further execution
   }
-    const response = await fetch(`http://localhost:3000/auth/user/login`, { 
+    const response = await fetch(`http://192.168.0.249:3000/auth/user/login`, { 
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(newLogin),
     });
     if (response.ok) {
-      console.log("Successful Login")
-      resetLoginData();
-      navigation.navigate('Floor');
+      const loginStatus = await response.json();
+      if (loginStatus.success) {
+        resetLoginData();
+        navigation.navigate('Floor');
+      } else {
+        alert('Unsuccessful Login: ' + loginStatus.error);
+        Alert.alert(
+          'Error',
+          'Unsuccessful Login: ' + loginStatus.error,
+          [
+            {text: 'OK', onPress: () => console.log('OK Pressed')},
+          ],
+          {cancelable: false},
+        );
+      }
     } else {
       console.error('Unsuccessful Login', response.statusText);
     }
