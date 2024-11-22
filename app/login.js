@@ -17,7 +17,7 @@ const [errors, setErrors] = useState({});
 const [state,setState] = useState({
 username: '',
 password: '',
-})
+});
 const resetLoginData = () => { // clears order after every submit
     setState({
       username: '',
@@ -85,6 +85,9 @@ try {
     console.error('Unsuccessful Login:', error);
   }
 };
+const onPressCreate = async () => {
+  navigation.navigate('Create');
+}
 return (
 <View style={styles.container}>
 <Image style={styles.logo} source={require('../assets/bean-scene-logo.png')} />
@@ -110,6 +113,10 @@ onPress = {onPressLogin}
 style={styles.loginBtn}>
 <Text style={styles.loginText}>LOGIN </Text>
 </TouchableOpacity>
+<TouchableOpacity
+onPress={() => navigation.navigate("Create", { screen: "CreateScreen" }) }>
+<Text style={styles.createLink}>Create New User</Text>
+</TouchableOpacity>
 </View>
 );
 }
@@ -119,6 +126,9 @@ flex: 1,
 backgroundColor: '#F0EAD6',
 alignItems: 'center',
 justifyContent: 'center',
+},
+createLink:{
+  textDecorationLine: 'underline',
 },
 logo: {
     width:293,
