@@ -10,6 +10,7 @@ import ReservationScreen from './app/reservation';
 import AdminScreen from './app/admin';
 import LoginScreen from './app/login';
 import LogoutScreen from './app/logout';
+import CreateScreen from './app/create';
 
 const Tab = createBottomTabNavigator();
 
@@ -73,6 +74,15 @@ export default function App() {
               headerShown: false
           }}
           initialParams={{ tableId: undefined }} 
+        />
+        <Tab.Screen name="Create" component={CreateScreen} 
+          options={{
+              tabBarButton: () => null,
+              tabBarStyle: { display: 'none' },
+              tabBarVisible:false, //hide tab bar on this screen
+              headerShown: false
+          }}
+          initialParams={{ tableId: undefined }}
         />
       </Tab.Navigator>
     </NavigationContainer>
