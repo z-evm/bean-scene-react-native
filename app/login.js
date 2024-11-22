@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import jwtDecode from 'jwt-decode';
 import {
 SafeAreaView,
 ScrollView,
@@ -69,16 +70,18 @@ const onPressLogin = async () => {
     const data = await response.json();
 
     if (response.ok && data.success) {
-      const userRole = data.role;
+      const token = data.token; // JWT token from the server
+      const decodedToken = jwtDecode(token);// Decode the token
+      
+      console.log('Decoded Token:', decodedToken); // View decoded token payload
+
+      const userRole = decodedToken.role; // Access the role directly from the token
       console.log('User Role:', userRole);
 
-      setRole(userRole); // Call setRole to update role in App.js
+      setRole(userRole); // Update the role in the app context
       resetLoginData();
 
-
-      
-      navigation.navigate('Floor'); // Navigate to Floor screen
-      
+      navigation.navigate('Floor');
 
     } else {
       Alert.alert('Login Failed', data.error || 'Invalid credentials.');
