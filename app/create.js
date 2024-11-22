@@ -118,7 +118,7 @@ onChangeText={(text) => handleInputChange('password', text)}/>
 <TouchableOpacity
 onPress = {onPressLogin}
 style={styles.loginBtn}>
-<Text style={styles.loginText}>Create </Text>
+<Text style={styles.loginText}>CREATE </Text>
 </TouchableOpacity>
 <TouchableOpacity
 onPress={() => navigation.navigate("Login") }
