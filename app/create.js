@@ -97,7 +97,7 @@ try {
 return (
 <View style={styles.container}>
 <Image style={styles.logo} source={require('../assets/bean-scene-logo.png')} />
-<Text>Create New User</Text>
+<Text style={styles.header}>Create New User</Text>
 <View style={styles.inputView}>
 <TextInput
 style={styles.inputText}
@@ -118,7 +118,12 @@ onChangeText={(text) => handleInputChange('password', text)}/>
 <TouchableOpacity
 onPress = {onPressLogin}
 style={styles.loginBtn}>
-<Text style={styles.loginText}>LOGIN </Text>
+<Text style={styles.loginText}>Create </Text>
+</TouchableOpacity>
+<TouchableOpacity
+onPress={() => navigation.navigate("Login") }
+style={styles.cancelBtn}>
+<Text style={styles.loginText}>CANCEL </Text>
 </TouchableOpacity>
 </View>
 );
@@ -139,6 +144,12 @@ title:{
 fontWeight: "bold",
 fontSize:50,
 color:"#fb5b5a",
+marginBottom: 40,
+},
+header:{
+fontWeight: "bold",
+fontSize:25,
+color:"#4AA1B5",
 marginBottom: 40,
 },
 inputView:{
@@ -167,6 +178,17 @@ height:50,
 alignItems:"center",
 justifyContent:"center",
 marginTop:40,
+marginBottom:10
+},
+cancelBtn:{
+width:"80%",
+fontWeight:"bold",
+backgroundColor:"#000",
+borderRadius:25,
+height:50,
+alignItems:"center",
+justifyContent:"center",
+marginTop:10,
 marginBottom:10
 },
 loginText: {
