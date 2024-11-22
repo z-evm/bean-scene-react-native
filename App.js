@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React, { useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
@@ -15,10 +15,12 @@ import CreateScreen from './app/create';
 const Tab = createBottomTabNavigator();
 
 export default function App() {
+  const [role, setRole] = useState(null); // Track the user's role
   return (
     <NavigationContainer>
       <Tab.Navigator screenOptions={{ headerTitle: '' }}>
-        <Tab.Screen name="Login" component={LoginScreen} 
+        <Tab.Screen name="Login"
+        component={(props) => <LoginScreen {...props} setRole={setRole} />} 
           options={{
               tabBarButton: () => null,
               tabBarStyle: { display: 'none' },
@@ -57,15 +59,16 @@ export default function App() {
               headerTitle:"Order Screen"
           }}
         />
-        <Tab.Screen name="Admin" component={AdminScreen} 
-          options={{
-              tabBarIcon: () => (
-                  <Icon name='table' size={20} />
-              ),
-              headerTitle:"Admin Screen"
-          }}
-          initialParams={{ tableId: undefined }} 
-        />
+        {role === 'admin' && (
+          <Tab.Screen
+            name="Admin"
+            component={AdminScreen}
+            options={{
+              tabBarIcon: () => <Icon name="table" size={20} />,
+              headerTitle: "Admin Screen",
+            }}
+          />
+        )}
         <Tab.Screen name="Logout" component={LogoutScreen}
           options={{
               tabBarIcon: () => (

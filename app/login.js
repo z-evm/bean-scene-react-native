@@ -12,7 +12,7 @@ View,
 TextInput,
 TouchableOpacity,
 } from 'react-native';
-export function Login({ route, navigation }) {
+export function Login({ route, navigation ,setRole}) {
 const [errors, setErrors] = useState({});
 const [state,setState] = useState({
 username: '',
@@ -35,56 +35,60 @@ const handleInputChange = (field, value) => {
   });
 };
 // /auth/user/login
+
 const onPressLogin = async () => {
-// Do something about login operation
-  const newLogin  = {
+  const newLogin = {
     email: state.username,
     password: state.password,
   };
+
   const newErrors = {};
-  var validRegex = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
-try {
-  if (!state.username.trim()) {
-    newErrors.username = 'Email is required.';
-  }
-  if (!state.username.match(validRegex)) {
-    newErrors.username = 'Email is not in a valid format.';
-  }
-  if (!state.password.trim()) {
-    newErrors.password = 'Password is required.';
-  }
-  if (Object.keys(newErrors).length > 0) {
-    setErrors(newErrors); // Set errors in state
-    return; // Stop further execution
-  }
-    const response = await fetch(`http://192.168.0.249:3000/auth/user/login`, { 
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(newLogin),
+  const validRegex = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
+
+  try {
+    if (!state.username.trim()) {
+      newErrors.username = 'Email is required.';
+    }
+    if (!state.username.match(validRegex)) {
+      newErrors.username = 'Email is not in a valid format.';
+    }
+    if (!state.password.trim()) {
+      newErrors.password = 'Password is required.';
+    }
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
+      return;
+    }
+
+    const response = await fetch(`http://192.168.86.221:3000/auth/user/login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(newLogin),
     });
-    if (response.ok) {
-      const loginStatus = await response.json();
-      if (loginStatus.success) {
-        resetLoginData();
-        navigation.navigate('Floor');
-      } else {
-        alert('Unsuccessful Login: ' + loginStatus.error);
-        Alert.alert(
-          'Error',
-          'Unsuccessful Login: ' + loginStatus.error,
-          [
-            {text: 'OK', onPress: () => console.log('OK Pressed')},
-          ],
-          {cancelable: false},
-        );
-      }
+
+    const data = await response.json();
+
+    if (response.ok && data.success) {
+      const userRole = data.role;
+      console.log('User Role:', userRole);
+
+      setRole(userRole); // Call setRole to update role in App.js
+      resetLoginData();
+
+
+      
+      navigation.navigate('Floor'); // Navigate to Floor screen
+      
+
     } else {
-      console.error('Unsuccessful Login', response.statusText);
+      Alert.alert('Login Failed', data.error || 'Invalid credentials.');
     }
   } catch (error) {
-    console.error('Unsuccessful Login:', error);
+    console.error('Error during fetch:', error);
+    Alert.alert('Error', 'Could not connect to the server.');
   }
 };
+
 const onPressCreate = async () => {
   navigation.navigate('Create');
 }
