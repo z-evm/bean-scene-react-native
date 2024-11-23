@@ -277,7 +277,7 @@ const handleCategoryChange = (text) => {
     await shareAsync(uri, { UTI: '.pdf', mimeType: 'application/pdf' });
   };
   
-  const pdfUrl ='http://192.168.131.221:8081/assets/bean-scene-menu.pdf';
+  const pdfUrl ='http://192.168.86.221:8081/assets/bean-scene-menu.pdf';
   return (
     <View style={styles.container}> 
       <View style={styles.formSection}> 

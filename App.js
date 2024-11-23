@@ -19,16 +19,18 @@ export default function App() {
   return (
     <NavigationContainer>
       <Tab.Navigator screenOptions={{ headerTitle: '' }}>
-        <Tab.Screen name="Login"
-        component={(props) => <LoginScreen {...props} setRole={setRole} />} 
-          options={{
+        <Tab.Screen
+            name="Login"
+            options={{
               tabBarButton: () => null,
               tabBarStyle: { display: 'none' },
               tabBarVisible:false, //hide tab bar on this screen
-              headerShown: false
-          }}
-          initialParams={{ tableId: undefined }}
-        />
+              headerShown: false,
+            }}
+          >
+            {(props) => <LoginScreen {...props} setRole={setRole} />}
+          </Tab.Screen>
+
         <Tab.Screen name="Floor" component={FloorScreen} 
           options={{
               tabBarIcon: () => (

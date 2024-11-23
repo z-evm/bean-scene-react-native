@@ -544,9 +544,9 @@ const createStyles = (isTablet) => StyleSheet.create({
   
   noteText: { fontSize: 14, color: '#888', fontStyle: 'italic' },
   
-  orderSummary: { marginTop: 10, padding: 10 },
+  orderSummary: { marginTop: 5, padding: 8 },
   
-  orderSummaryText: { fontSize: 16, fontWeight: 'bold' },
+  orderSummaryText: { fontSize: isTablet ? 14 : 12, fontWeight: 'bold' },
   
   statusToggleButton: { padding: 10, backgroundColor: '#2196F3', borderRadius: 5, marginTop: 10 },
   
