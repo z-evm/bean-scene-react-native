@@ -71,7 +71,7 @@ export default function App() {
             }}
           />
         )}
-        <Tab.Screen name="Logout" component={LogoutScreen}
+        <Tab.Screen name="Logout" component={LoginScreen}
           options={{
               tabBarIcon: () => (
                   <Icon name='sign-out' size={20} />
