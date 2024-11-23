@@ -61,7 +61,7 @@ const onPressLogin = async () => {
       return;
     }
 
-    const response = await fetch(`http://localhost:3000/auth/user/login`, {
+    const response = await fetch(`http://192.168.0.249:3000/auth/user/login`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(newLogin),
@@ -85,9 +85,11 @@ const onPressLogin = async () => {
 
     } else {
       Alert.alert('Login Failed', data.error || 'Invalid credentials.');
+      alert('Login Failed: Invalid credentials - ' + data.error);
     }
   } catch (error) {
     console.error('Error during fetch:', error);
+    alert('Error: Could not connect to the server.');
     Alert.alert('Error', 'Could not connect to the server.');
   }
 };
@@ -101,7 +103,7 @@ return (
 <View style={styles.inputView}>
 <TextInput
 style={styles.inputText}
-placeholder="Username"
+placeholder="Email"
 placeholderTextColor="#003f5c"
 onChangeText={(text) => handleInputChange('username', text)}/>
 {errors.username && <Text style={styles.errorText}>{errors.username}</Text>}
