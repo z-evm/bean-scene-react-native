@@ -1,5 +1,6 @@
-import { Text } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 
-export default function ReservationScreen() {
-    navigation.navigate('Logout');
+export function Logout({navigation}) {
+    navigation.navigate('Login');
 }
+export default Logout;
