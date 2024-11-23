@@ -76,6 +76,8 @@ export default function App() {
               tabBarIcon: () => (
                   <Icon name='sign-out' size={20} />
               ),
+              tabBarVisible:false, //hide tab bar on this screen
+              tabBarStyle: { display: 'none' },
               headerShown: false
           }}
           initialParams={{ tableId: undefined }} 
