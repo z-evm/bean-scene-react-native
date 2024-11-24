@@ -3,19 +3,18 @@ import { View, Text, TextInput, StyleSheet, Pressable, Alert } from 'react-nativ
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const EditUserScreen = ({ route, navigation }) => {
-  const { user } = route.params; // Extract the user object passed as a parameter
+  const { user } = route.params; 
   const [form, setForm] = useState({
     email: user.email || '',
-    password: '', // Add password to the form
+    password: '', 
     role: user.role || '',
   });
 
   useEffect(() => {
-    // Update form state when route parameters change
     if (route.params?.user) {
       setForm({
         email: route.params.user.email || '',
-        password: '', // Reset password on route change
+        password: '', 
         role: route.params.user.role || 'user',
       });
     }
@@ -41,11 +40,11 @@ const EditUserScreen = ({ route, navigation }) => {
         body: JSON.stringify(form),
       });
   
-      console.log('Response status:', response.status);
-  
       if (response.ok) {
         Alert.alert('Success', 'User updated successfully');
-        navigation.navigate('Users'); // Navigate back to Users screen
+        setTimeout(() => {
+          navigation.navigate('Users');
+        }, 1000);
       } else {
         const errorText = await response.text();
         console.error('Error updating user:', errorText);
@@ -75,18 +74,28 @@ const EditUserScreen = ({ route, navigation }) => {
         value={form.password}
         onChangeText={(text) => setForm({ ...form, password: text })}
       />
-      <TextInput
-        style={styles.input}
-        placeholder="Role"
-        value={form.role}
-        onChangeText={(text) => setForm({ ...form, role: text })} // Allow any input while typing
-        onBlur={() => {
-          if (form.role !== 'admin' && form.role !== 'user') {
-            Alert.alert('Invalid Role', 'Role must be "admin" or "user".');
-            setForm({ ...form, role: '' }); // Reset to empty if invalid
-          }
-        }}
-      />
+     <View style={styles.toggleContainer}>
+        <Pressable
+          style={[
+            styles.toggleButton,
+            form.role === 'user' && styles.selectedToggle, // Highlight for "User"
+          ]}
+          onPress={() => setForm({ ...form, role: 'user' })}
+        >
+          <Text style={styles.toggleText}>User</Text>
+        </Pressable>
+        <Pressable
+          style={[
+            styles.toggleButton,
+            form.role === 'admin' && styles.selectedToggle, // Highlight for "Admin"
+          ]}
+          onPress={() => setForm({ ...form, role: 'admin' })}
+        >
+          <Text style={styles.toggleText}>Admin</Text>
+        </Pressable>
+      </View>
+
+
       <Pressable style={styles.saveButton} onPress={handleSave}>
         <Text style={styles.saveButtonText}>Save</Text>
       </Pressable>
@@ -127,12 +136,34 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
   },
-  backButton: {
-    paddingHorizontal: 10,
+  buttonContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 15,
   },
-  backButtonText: {
+  toggleContainer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    marginBottom: 20,
+  },
+  toggleButton: {
+    flex: 1,
+    padding: 15,
+    marginHorizontal: 5,
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 8,
+    backgroundColor: '#f9f9f9',
+  },
+  selectedToggle: {
+    backgroundColor: '#4CAF50', // Highlight for selected state
+    borderColor: '#4CAF50',
+  },
+  toggleText: {
     fontSize: 16,
-    color: '#007BFF',
+    fontWeight: 'bold',
+    color: '#333',
   },
 });
 
