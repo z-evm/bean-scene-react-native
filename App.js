@@ -11,6 +11,8 @@ import AdminScreen from './app/admin';
 import LoginScreen from './app/login';
 import LogoutScreen from './app/logout';
 import CreateScreen from './app/create';
+import UserScreen from './app/user';
+import CreateadminScreen from './app/createadmin';
 
 const Tab = createBottomTabNavigator();
 
@@ -71,14 +73,47 @@ export default function App() {
             }}
           />
         )}
-        <Tab.Screen name="Logout" component={LoginScreen}
+        {role === 'admin' && (
+          <Tab.Screen
+            name="Users"
+            component={UserScreen}
+            options={{
+              tabBarIcon: () => <Icon name="user-o" size={20} />,
+              headerTitle: "Users Screen",
+            }}
+            initialParams={{ role: role }}
+          />
+        )}
+        {role === 'admin' && (
+          <Tab.Screen
+            name="CreateUser"
+            component={CreateadminScreen}
+            options={{
+              tabBarIcon: () => <Icon name="user-o" size={20} />,
+              tabBarButton: () => null,
+              headerTitle: "Create User Screen",
+            }}
+            initialParams={{ validToken: role }}
+          />
+        )}
+        <Tab.Screen name="Logout" component={LogoutScreen}
           options={{
               tabBarIcon: () => (
                   <Icon name='sign-out' size={20} />
               ),
               tabBarVisible:false, //hide tab bar on this screen
               tabBarStyle: { display: 'none' },
-              headerShown: false
+              headerShown: false,
+              tabBarOnPress: (scene, jumpToIndex) => {
+               return Alert.alert(   // Shows up the alert without redirecting anywhere
+                   'Confirmation required'
+                   ,'Do you really want to logout?'
+                   ,[
+                     {text: 'Accept', onPress: () => { navigation.dispatch(NavigationActions.navigate({ routeName: 'Login' }))}},
+                     {text: 'Cancel'}
+                    ]
+               );
+              },
           }}
           initialParams={{ tableId: undefined }} 
         />
