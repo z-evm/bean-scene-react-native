@@ -1,4 +1,7 @@
 import React, { useState } from 'react';
+import {Platform} from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as SecureStore from 'expo-secure-store';
 import jwtDecode from 'jwt-decode';
 import {
 SafeAreaView,
@@ -37,6 +40,10 @@ const handleInputChange = (field, value) => {
 };
 // /auth/user/login
 
+async function save(key, value) {
+  await SecureStore.setItemAsync(key, value);
+}
+
 const onPressLogin = async () => {
   const newLogin = {
     email: state.username,
@@ -72,7 +79,12 @@ const onPressLogin = async () => {
     if (response.ok && data.success) {
       const token = data.token; // JWT token from the server
       const decodedToken = jwtDecode(token);// Decode the token
-      
+      console.log(token);
+      if (Platform.OS === 'web') {
+        await AsyncStorage.setItem('secure_token', token);
+      } else { // mobile
+        save('secure_token', token);
+      }
       console.log('Decoded Token:', decodedToken); // View decoded token payload
 
       const userRole = decodedToken.role; // Access the role directly from the token
@@ -80,6 +92,7 @@ const onPressLogin = async () => {
 
       setRole(userRole); // Update the role in the app context
       resetLoginData();
+      
 
       navigation.navigate('Floor');
 
@@ -89,7 +102,7 @@ const onPressLogin = async () => {
     }
   } catch (error) {
     console.error('Error during fetch:', error);
-    alert('Error: Could not connect to the server.');
+    alert('Error: Could not connect to the server.' + error);
     Alert.alert('Error', 'Could not connect to the server.');
   }
 };
