@@ -56,7 +56,7 @@ const UserScreen = ({ route, navigation }) => {
       } else if (Platform.OS === 'web') {
         // it's on web!
       } 
-      const response = await fetch('http://localhost:3000/api/users', { 
+      const response = await fetch('http://192.168.0.249:3000/api/users', { 
         method: 'GET',
         headers: { 'Authorization': 'Bearer '+ token, 'Content-Type': 'application/json' },
        }); // search with Id
@@ -76,9 +76,12 @@ const UserScreen = ({ route, navigation }) => {
 
   const handleDelete = async (_id) => {
     try {
-    const token = await AsyncStorage.getItem('secure_token');
+      let token = await AsyncStorage.getItem('secure_token');
+      if (Platform.OS === 'android') {
+        token = await SecureStore.getItemAsync('secure_token');
+      } 
       console.log(token);
-      const response = await fetch(`http://localhost:3000/api/users/${_id}`, { 
+      const response = await fetch(`http://192.168.0.249:3000/api/users/${_id}`, { 
               method: 'DELETE',
               headers: { 'Authorization': 'Bearer '+ token, 'Content-Type': 'application/json' },
              }); // search with Id
