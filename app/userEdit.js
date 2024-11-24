@@ -1,6 +1,7 @@
 import React, { useState, useEffect,useLayoutEffect } from 'react';
-import { View, Text, TextInput, StyleSheet, Pressable, Alert } from 'react-native';
+import { View, Text, TextInput, StyleSheet, Pressable, Alert, Platform } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as SecureStore from 'expo-secure-store';
 
 const EditUserScreen = ({ route, navigation }) => {
   const { user } = route.params; 
@@ -22,7 +23,11 @@ const EditUserScreen = ({ route, navigation }) => {
 
   const handleSave = async () => {
     try {
-      const token = await AsyncStorage.getItem('secure_token');
+      let token = await AsyncStorage.getItem('secure_token');
+      if (Platform.OS === 'android') {
+        token = await SecureStore.getItemAsync('secure_token');
+      } 
+      console.log(token);
       if (!token) {
         Alert.alert('Authentication Error', 'User is not authenticated. Please log in again.');
         return;
@@ -31,7 +36,7 @@ const EditUserScreen = ({ route, navigation }) => {
       console.log('Token before save:', token);
       console.log('Form data being sent:', form);
   
-      const response = await fetch(`http://localhost:3000/api/users/${user._id}`, {
+      const response = await fetch(`http://192.168.0.249:3000/api/users/${user._id}`, {
         method: 'PUT',
         headers: {
           'Authorization': `Bearer ${token}`,
