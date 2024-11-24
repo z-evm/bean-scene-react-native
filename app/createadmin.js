@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useFocusEffect } from '@react-navigation/native';
 import {
 SafeAreaView,
 ScrollView,
@@ -20,6 +21,13 @@ username: '',
 password: '',
 })
 const [selectedRole, setSelectedRole] = useState(false);
+
+
+useFocusEffect(
+  React.useCallback(() => {
+    resetCreateadminData();
+  }, [])
+);
 
 
 const resetCreateadminData = () => { // clears order after every submit
@@ -119,6 +127,7 @@ ref={input => { this.textInput = input }}
 style={styles.inputText}
 placeholder="Username"
 placeholderTextColor="#003f5c"
+value={state.username}
 onChangeText={(text) => handleInputChange('username', text)}/>
 {errors.username && <Text style={styles.errorText}>{errors.username}</Text>}
 </View>
@@ -127,6 +136,7 @@ onChangeText={(text) => handleInputChange('username', text)}/>
 ref={input => { this.textInput = input }}
 style={styles.inputText}
 secureTextEntry
+value={state.password} 
 placeholder="Password"
 placeholderTextColor="#003f5c"
 onChangeText={(text) => handleInputChange('password', text)}/>
