@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useFocusEffect } from '@react-navigation/native';
 import {Platform} from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as SecureStore from 'expo-secure-store';
@@ -22,6 +23,13 @@ const [state,setState] = useState({
 username: '',
 password: '',
 });
+
+
+useFocusEffect(
+  React.useCallback(() => {
+    resetLoginData();
+  }, [])
+);
 const resetLoginData = () => { // clears order after every submit
     setState({
       username: '',
@@ -118,6 +126,7 @@ return (
 style={styles.inputText}
 placeholder="Email"
 placeholderTextColor="#003f5c"
+value={state.username}
 onChangeText={(text) => handleInputChange('username', text)}/>
 {errors.username && <Text style={styles.errorText}>{errors.username}</Text>}
 </View>
@@ -127,6 +136,7 @@ style={styles.inputText}
 secureTextEntry
 placeholder="Password"
 placeholderTextColor="#003f5c"
+value={state.password} 
 onChangeText={(text) => handleInputChange('password', text)}/>
 {errors.password && <Text style={styles.errorText}>{errors.password}</Text>}
 </View>
