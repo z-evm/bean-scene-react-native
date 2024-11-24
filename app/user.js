@@ -2,6 +2,9 @@ import React, { useState, useMemo, useEffect } from 'react';
 import {View,Text,TextInput,ScrollView,StyleSheet,FlatList,Dimensions, Pressable, Alert, Button, Linking, Platform} from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as SecureStore from 'expo-secure-store';
+import { useFocusEffect } from '@react-navigation/native';
+
+
 /**
  * This shows the Admin screen for the app
  * 
@@ -25,11 +28,17 @@ const UserScreen = ({ route, navigation }) => {
   const styles = useMemo(() => createStyles(isTablet), [isTablet]); // 
   
 
+  useFocusEffect( //  is navigation hood trigger when screen comes
+    React.useCallback(() => { // os used to  memorize function, avoding unnecessary re-renders
+      fetchUsers()
+    }, []) 
+  );
+
  
 
-  useEffect(() => {
-    fetchUsers(); // Fetch items on initial load
-  }, []);
+ // useEffect(() => {
+ //  fetchUsers(); // Fetch items on initial load
+ // }, []);
 
 /**
  * This function fetches the menu items from the database and display these in the Admin page
@@ -47,7 +56,7 @@ const UserScreen = ({ route, navigation }) => {
       } else if (Platform.OS === 'web') {
         // it's on web!
       } 
-      const response = await fetch('http://192.168.0.249:3000/api/users', { 
+      const response = await fetch('http://localhost:3000/api/users', { 
         method: 'GET',
         headers: { 'Authorization': 'Bearer '+ token, 'Content-Type': 'application/json' },
        }); // search with Id
@@ -69,7 +78,7 @@ const UserScreen = ({ route, navigation }) => {
     try {
     const token = await AsyncStorage.getItem('secure_token');
       console.log(token);
-      const response = await fetch(`http://192.168.0.249:3000/api/users/${_id}`, { 
+      const response = await fetch(`http://localhost:3000/api/users/${_id}`, { 
               method: 'DELETE',
               headers: { 'Authorization': 'Bearer '+ token, 'Content-Type': 'application/json' },
              }); // search with Id
@@ -103,9 +112,12 @@ const UserScreen = ({ route, navigation }) => {
                 <Text>
                   {item.email} - {item.role} user
                 </Text>
-                <Pressable style={styles.editButton}>
-                  <Text style={styles.editButtonText}>Edit</Text>
-                </Pressable>
+                <Pressable
+                    style={styles.editButton}
+                    onPress={() => navigation.navigate('UserEdit', { user: item })} // Pass the user data
+                  >
+                    <Text style={styles.editButtonText}>Edit</Text>
+                  </Pressable>
                 <Pressable style={styles.deleteButton} onPress={() => handleDelete(item._id)}>
                   <Text style={styles.deleteButtonText}>Delete</Text>
                 </Pressable>

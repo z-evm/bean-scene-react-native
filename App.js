@@ -13,6 +13,7 @@ import LogoutScreen from './app/logout';
 import CreateScreen from './app/create';
 import UserScreen from './app/user';
 import CreateadminScreen from './app/createadmin';
+import UserEditScreen from './app/userEdit';
 
 const Tab = createBottomTabNavigator();
 
@@ -83,6 +84,17 @@ export default function App() {
             }}
             initialParams={{ role: role }}
           />
+        )}
+        {role === 'admin' && (
+        <Tab.Screen
+          name="UserEdit"
+          component={UserEditScreen}
+          options={{
+            tabBarButton: () => null,
+            tabBarVisible:true,
+            headerShown: false,
+          }}
+        />
         )}
         {role === 'admin' && (
           <Tab.Screen
