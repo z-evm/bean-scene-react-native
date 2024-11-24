@@ -29,7 +29,7 @@ const UserScreen = ({ route, navigation }) => {
   
 
   useFocusEffect( //  is navigation hood trigger when screen comes
-    React.useCallback(() => { // os used to  memorize function, avoding unnecessary re-renders
+    React.useCallback(() => { 
       fetchUsers()
     }, []) 
   );

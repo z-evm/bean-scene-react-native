@@ -1,4 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState} from 'react';
+import { useFocusEffect } from '@react-navigation/native';
+
 import {
 SafeAreaView,
 ScrollView,
@@ -18,12 +20,23 @@ const [state,setState] = useState({
 username: '',
 password: '',
 })
+
+
+
+
+useFocusEffect(
+  React.useCallback(() => {
+    resetLoginData();
+  }, [])
+);
+
 const resetLoginData = () => { // clears order after every submit
-    setState({
-      username: '',
-        password: '',
-    });
+  setState({
+    username: '',
+      password: '',
+  });
 };
+
 const handleInputChange = (field, value) => {
   setState({ ...state, [field]: value });
 
@@ -74,6 +87,7 @@ try {
         ],
         {cancelable: false},
         );
+
         resetLoginData();
         navigation.navigate('Login');
       } else {
@@ -103,6 +117,7 @@ return (
 style={styles.inputText}
 placeholder="Username"
 placeholderTextColor="#003f5c"
+value={state.username}
 onChangeText={(text) => handleInputChange('username', text)}/>
 {errors.username && <Text style={styles.errorText}>{errors.username}</Text>}
 </View>
@@ -112,6 +127,7 @@ style={styles.inputText}
 secureTextEntry
 placeholder="Password"
 placeholderTextColor="#003f5c"
+value={state.password} 
 onChangeText={(text) => handleInputChange('password', text)}/>
 {errors.password && <Text style={styles.errorText}>{errors.password}</Text>}
 </View>
