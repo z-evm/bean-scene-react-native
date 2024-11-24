@@ -7,13 +7,13 @@ StatusBar,
 Alert,
 StyleSheet,
 Text,
-CheckBox,
 useColorScheme,
 Image,
 View,
 TextInput,
 TouchableOpacity,
 } from 'react-native';
+import Checkbox from 'expo-checkbox';
 export function Createadmin({ route, navigation }) {
 const [errors, setErrors] = useState({});
 const [state,setState] = useState({
@@ -77,7 +77,7 @@ try {
     setErrors(newErrors); // Set errors in state
     return; // Stop further execution
   }
-    const response = await fetch(`http://localhost:3000/auth/user/signup`, { 
+    const response = await fetch(`http://192.168.0.249:3000/auth/user/signup`, { 
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(newLogin),
@@ -142,16 +142,16 @@ placeholderTextColor="#003f5c"
 onChangeText={(text) => handleInputChange('password', text)}/>
 {errors.password && <Text style={styles.errorText}>{errors.password}</Text>}
 </View>
-<View style={styles.inputViewSelect}>
 <Text style={styles.labelText}>
 Please check this box if this user will be an admin user:
 </Text>
-<CheckBox
+
+<Checkbox
     value={selectedRole}
     onValueChange={setSelectedRole}
     style={styles.checkbox}
 />
-</View>
+
 <TouchableOpacity
 onPress = {onPressLogin}
 style={styles.loginBtn}>
