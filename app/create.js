@@ -57,7 +57,7 @@ try {
     setErrors(newErrors); // Set errors in state
     return; // Stop further execution
   }
-    const response = await fetch(`http://192.168.86.221:3000/auth/user/signup`, { 
+    const response = await fetch(`http://192.168.0.249:3000/auth/user/signup`, { 
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(newLogin),
@@ -88,10 +88,10 @@ try {
         );
       }
     } else {
-      console.error('Unsuccessful Login', response.statusText);
+      console.error('Unsuccessful Login Creation', response.statusText);
     }
   } catch (error) {
-    console.error('Unsuccessful Login:', error);
+    console.error('Unsuccessful Login Creation:', error);
   }
 };
 return (
