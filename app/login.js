@@ -73,10 +73,11 @@ const onPressLogin = async () => {
     }
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
+      {Platform.OS == "android" ? alert(newErrors.username + "\n\n" + newErrors.password) : setErrors(newErrors)}
       return;
     }
 
-    const response = await fetch(`http://localhost:3000/auth/user/login`, {
+    const response = await fetch(`http://192.168.0.249:3000/auth/user/login`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(newLogin),
@@ -145,10 +146,7 @@ onPress = {onPressLogin}
 style={styles.loginBtn}>
 <Text style={styles.loginText}>LOGIN </Text>
 </TouchableOpacity>
-<TouchableOpacity
-onPress={() => navigation.navigate("Create", { screen: "CreateScreen" }) }>
-<Text style={styles.createLink}>Create New User</Text>
-</TouchableOpacity>
+
 </View>
 );
 }
