@@ -12,6 +12,7 @@ Image,
 View,
 TextInput,
 TouchableOpacity,
+Platform,
 } from 'react-native';
 import Checkbox from 'expo-checkbox';
 export function Createadmin({ route, navigation }) {
@@ -75,6 +76,7 @@ try {
   }
   if (Object.keys(newErrors).length > 0) {
     setErrors(newErrors); // Set errors in state
+    {Platform.OS == "android" ? alert(newErrors.username + "\n\n" + newErrors.password) : setErrors(newErrors)}
     return; // Stop further execution
   }
     const response = await fetch(`http://192.168.0.249:3000/auth/user/signup`, { 
