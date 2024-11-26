@@ -3,6 +3,7 @@ import { StyleSheet, Text, View } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import Icon from 'react-native-vector-icons/FontAwesome';
+import { enableFreeze } from 'react-native-screens';
 
 import FloorScreen from './app/floor';
 import OrderScreen from './app/order';
@@ -16,7 +17,7 @@ import CreateadminScreen from './app/createadmin';
 import UserEditScreen from './app/userEdit';
 
 const Tab = createBottomTabNavigator();
-
+enableFreeze(true);
 export default function App() {
   const [role, setRole] = useState(null); // Track the user's role
   return (
