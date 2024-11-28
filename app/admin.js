@@ -258,7 +258,7 @@ const handleCategoryChange = (text) => {
       </style>
       </head>
       <body>
-      <img class="logo" src="https://api.lizard.dev.thickets.onl/assets/bean-scene-logo.png" />
+      <img class="logo" src="../assets/bean-scene-logo.png" />
       <h1>Menu</h1>
       <table>
       <thead>
@@ -277,7 +277,7 @@ const handleCategoryChange = (text) => {
     await shareAsync(uri, { UTI: '.pdf', mimeType: 'application/pdf' });
   };
   
-  const pdfUrl ='https://api.lizard.dev.thickets.onl/assets/bean-scene-menu.pdf';
+  const pdfUrl ='../assets/bean-scene-menu.pdf';
   return (
     <View style={styles.container}> 
       <View style={styles.formSection}> 
