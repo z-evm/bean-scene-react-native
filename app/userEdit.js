@@ -36,7 +36,7 @@ const EditUserScreen = ({ route, navigation }) => {
       console.log('Token before save:', token);
       console.log('Form data being sent:', form);
   
-      const response = await fetch(`http://192.168.0.249:3000/api/users/${user._id}`, {
+      const response = await fetch(`https://api.lizard.dev.thickets.onl/api/users/${user._id}`, {
         method: 'PUT',
         headers: {
           'Authorization': `Bearer ${token}`,

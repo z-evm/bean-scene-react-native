@@ -40,7 +40,7 @@ const AdminScreen = () => {
 
   const fetchMenuItems = async () => {
     try {
-      const response = await fetch('http://localhost:3000/api/menu-items');
+      const response = await fetch('https://api.lizard.dev.thickets.onl/api/menu-items');
       if (response.ok) {
         const data = await response.json();
         setMenuItems(data);
@@ -76,7 +76,7 @@ const AdminScreen = () => {
 
   const handleDelete = async (_id) => {
     try {
-      const response = await fetch(`http://localhost:3000/api/menu-items/${_id}`, { 
+      const response = await fetch(`https://api.lizard.dev.thickets.onl/api/menu-items/${_id}`, { 
               method: 'DELETE' 
              }); // search with Id
       if (response.ok) {
@@ -160,7 +160,7 @@ const AdminScreen = () => {
       let response;
       if (isEditing && currentId) { // if editing true and current id have update menu item 
         // Update existing item
-        response = await fetch(`http://localhost:3000/api/menu-items/${currentId}`, {
+        response = await fetch(`https://api.lizard.dev.thickets.onl/api/menu-items/${currentId}`, {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(newItem),
@@ -179,7 +179,7 @@ const AdminScreen = () => {
       }
       // Add new item
        else {
-        response = await fetch('http://localhost:3000/api/menu-items', {
+        response = await fetch('https://api.lizard.dev.thickets.onl/api/menu-items', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(newItem),
@@ -258,7 +258,7 @@ const handleCategoryChange = (text) => {
       </style>
       </head>
       <body>
-      <img class="logo" src="http://192.168.0.249:8081/assets/bean-scene-logo.png" />
+      <img class="logo" src="https://api.lizard.dev.thickets.onl/assets/bean-scene-logo.png" />
       <h1>Menu</h1>
       <table>
       <thead>
@@ -277,7 +277,7 @@ const handleCategoryChange = (text) => {
     await shareAsync(uri, { UTI: '.pdf', mimeType: 'application/pdf' });
   };
   
-  const pdfUrl ='http://192.168.86.221:8081/assets/bean-scene-menu.pdf';
+  const pdfUrl ='https://api.lizard.dev.thickets.onl/assets/bean-scene-menu.pdf';
   return (
     <View style={styles.container}> 
       <View style={styles.formSection}> 

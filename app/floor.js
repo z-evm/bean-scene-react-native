@@ -30,7 +30,7 @@ export function Floor({ route, navigation }) {
  */
   const fetchOrderData = async () => {
     try {
-      const response = await fetch(`http://localhost:3000/api/orders`); // Ensure correct endpoint
+      const response = await fetch(`https://api.lizard.dev.thickets.onl/api/orders`); // Ensure correct endpoint
       if (response.ok) {
         const data = await response.json();
         setOrders(data); 

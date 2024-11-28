@@ -56,7 +56,7 @@ const UserScreen = ({ route, navigation }) => {
       } else if (Platform.OS === 'web') {
         // it's on web!
       } 
-      const response = await fetch('http://192.168.0.249:3000/api/users', { 
+      const response = await fetch('https://api.lizard.dev.thickets.onl/api/users', { 
         method: 'GET',
         headers: { 'Authorization': 'Bearer '+ token, 'Content-Type': 'application/json' },
        }); // search with Id
@@ -81,7 +81,7 @@ const UserScreen = ({ route, navigation }) => {
         token = await SecureStore.getItemAsync('secure_token');
       } 
       console.log(token);
-      const response = await fetch(`http://192.168.0.249:3000/api/users/${_id}`, { 
+      const response = await fetch(`https://api.lizard.dev.thickets.onl/api/users/${_id}`, { 
               method: 'DELETE',
               headers: { 'Authorization': 'Bearer '+ token, 'Content-Type': 'application/json' },
              }); // search with Id

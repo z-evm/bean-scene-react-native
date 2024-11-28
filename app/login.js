@@ -60,7 +60,7 @@ const onPressLogin = async () => {
 
   const newErrors = {};
   const validRegex = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
-
+  let errortext = "";
   try {
     if (!state.username.trim()) {
       newErrors.username = 'Email is required.';
@@ -71,13 +71,19 @@ const onPressLogin = async () => {
     if (!state.password.trim()) {
       newErrors.password = 'Password is required.';
     }
+    if (newErrors.username !== undefined) {
+      errortext = errortext + newErrors.username + "\n\n" 
+    }
+    if (newErrors.password !== undefined) {
+      errortext = errortext + newErrors.password + "\n\n" 
+    }
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
-      {Platform.OS == "android" ? alert(newErrors.username + "\n\n" + newErrors.password) : setErrors(newErrors)}
+      {Platform.OS == "android" ? alert(errortext) : setErrors(newErrors)}
       return;
     }
 
-    const response = await fetch(`http://192.168.0.249:3000/auth/user/login`, {
+    const response = await fetch(`https://api.lizard.dev.thickets.onl/auth/user/login`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(newLogin),

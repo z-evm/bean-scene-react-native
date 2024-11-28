@@ -70,7 +70,7 @@ try {
     setErrors(newErrors); // Set errors in state
     return; // Stop further execution
   }
-    const response = await fetch(`http://localhost:3000/auth/user/signup`, { 
+    const response = await fetch(`https://api.lizard.dev.thickets.onl/auth/user/signup`, { 
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(newLogin),

@@ -58,7 +58,7 @@ const OrderScreen = ({route, navigation }) => {
  */
   const fetchMenuItems = async () => {
     try {
-      const response = await fetch('http://localhost:3000/api/menu-items');
+      const response = await fetch('https://api.lizard.dev.thickets.onl/api/menu-items');
       if (response.ok) {
         const data = await response.json();
         setMenuItems(data);
@@ -90,7 +90,7 @@ const OrderScreen = ({route, navigation }) => {
  */
   const fetchOrderData = async (orderId) => {
     try{
-      const response=await fetch(`http://localhost:3000/api/orders/${orderId}`);
+      const response=await fetch(`https://api.lizard.dev.thickets.onl/api/orders/${orderId}`);
       if(response.ok){
         const data=await response.json()
         setOrderData(data);
@@ -127,7 +127,7 @@ const OrderScreen = ({route, navigation }) => {
     };
   
     try {
-      const response = await fetch('http://localhost:3000/api/orders', {  // post order 
+      const response = await fetch('https://api.lizard.dev.thickets.onl/api/orders', {  // post order 
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(orderTicket),
@@ -187,7 +187,7 @@ const OrderScreen = ({route, navigation }) => {
     
 
     try {
-      const response = await fetch(`http://localhost:3000/api/orders/${orderId}`, {  // post order 
+      const response = await fetch(`https://api.lizard.dev.thickets.onl/api/orders/${orderId}`, {  // post order 
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(orderTicket),
