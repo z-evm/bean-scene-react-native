@@ -1,25 +1,89 @@
-# bean-scene-app-zach-alex
+# Bean Scene Mobile App (React Native + Expo)
 
-1) type in "npm install" to install all the required dependencies for the project.
-2) type in $env:REACT_NATIVE_PACKAGER_HOSTNAME=your.local.ip.address to make sure that the app can run using your network on your local environment (replace your.local.ip.address with your real ip address which can be found when you type in ipconfig in your cmd prompt)
-3) type in npx expo start to get the app running in expo. You will see the options to either run the app on your iOS devices via a QR code, android device or web browser.
+A cross-platform mobile app for the Bean Scene restaurant, built with **React Native** using **Expo**. The app supports menu browsing and management, ordering, payments.
 
-# pages
-- the App's pages can be edited from the app folder
--> index.js - Home Page
--> menu.js - Menu Page
--> order.js - Order Page
--> reservation.js - Reservation page
-- Once you create a page in a .js file format in the app folder:
-1) You need to import that page to the App.js file e.g.:
+---
 
-import HomeScreen from './app/index';
+## 🚀 Getting Started
 
-2) Within the <Tab.Navigator> HTML tag, add the page that you created to the bottom navigation bar like this:
+### 📦 1. Install Dependencies
 
-<Tab.Screen name="Home" component={HomeScreen} />
+```
+npm install
+```
 
-- the name attribute corresponds to the Name of the page that is shown on the screen
-- the component attribute corresponds to the name of the variable that you declared in step 1 with the curly braces
+### 🌐 2. Set Up Local Network Access
 
-3)  Please make sure Endpoint  If you are using android studio before run make sure frontend End point should be http://YourApi:3000/api/ 
+In **PowerShell**, run the following command (replace with your machine's local IP from `ipconfig`):
+
+```
+$env:REACT_NATIVE_PACKAGER_HOSTNAME="your.local.ip.address"
+```
+
+This ensures the app can access your backend server over your local network.
+
+### ▶️ 3. Start the Expo Server
+
+```
+npx expo start
+```
+
+You can then:
+- Scan the QR code to run the app on your **iOS** or **Android** device (Expo Go)
+- Run it in a **web browser**
+
+---
+
+## 📁 App Structure
+
+All screens are located in the `app/` folder:
+
+| File            | Page         |
+|-----------------|--------------|
+| `index.js`      | Home         |
+| `menu.js`       | Menu         |
+| `order.js`      | Order        |
+| `reservation.js`| Reservation  |
+
+To add a new screen:
+
+1. **Create a JS file** in the `app/` folder, e.g. `settings.js`
+2. **Import it in `App.js`:**
+
+   ```
+   import SettingsScreen from './app/settings';
+   ```
+
+3. **Add it to the tab navigator:**
+
+   ```
+   <Tab.Screen name="Settings" component={SettingsScreen} />
+   ```
+
+---
+
+## ⚠️ API Endpoint Configuration
+
+If you're using Android Studio (or a physical device), ensure that your API base URL in the frontend is set correctly:
+
+```
+http://<your-ip-address>:3000/api/
+```
+
+Replace `<your-ip-address>` with your actual local IP. This allows your mobile app to connect to the Express backend running on your PC.
+Note: You will need the express server that was developed for this program which is in a separate repository 'bean-scene-server'.
+
+---
+
+## 🧪 Tech Stack
+
+- React Native w/ Expo
+- React Navigation (Bottom Tab Navigator)
+- Fetch (for API calls)
+- Backend: Express.js & MongoDB (separate server)
+
+---
+
+## 📄 License
+
+This project is licensed under the MIT License.
